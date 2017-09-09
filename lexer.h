@@ -46,5 +46,7 @@ struct token {
 
 /* Scan and evaluate input stream */
 void sc_lexer_tokenize(struct compiler_state *cs);
+/* Print chain of scanned tokens */
+void sc_lexer_token_chain(const struct compiler_state *cs);
 
 #endif /* !_LEXER_H */

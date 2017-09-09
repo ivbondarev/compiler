@@ -35,10 +35,10 @@ static void add_tok(struct compiler_state *cs, struct token *tok)
 	sc_vector_add(&cs->tokens, tok);
 }
 
-static void remove_newline(char *str)
+static void lexer_remove_bad_symbols(char *str)
 {
 	for (size_t i = 0; i < strlen(str); i++)
-		if (str[i] == '\n')
+		if (str[i] == '\n' || str[i] == '\t')
 			str[i] = ' ';
 }
 
@@ -54,10 +54,12 @@ static size_t lexer_read_id(struct compiler_state *cs, const char *str)
 	}
 
 	tok->type = ID;
-	if (!strcmp(buf, "if"))
+	tok->str = buf;
+	if (!strcmp(buf, "if")) {
 		tok->type = IF;
+		free(buf);
+	}
 
-	printf("ID [%s]", buf);
 	add_tok(cs, tok);
 	return i;
 }
@@ -69,9 +71,7 @@ static size_t lexer_read_assign(struct compiler_state *cs, const char *str)
 
 	if (1 == len) {
 		tok->type = ASSIGN;
-		printf("ASSIGN");
 	} else if (2 == len && !strcmp(str, "==")) {
-		printf("EQ");
 		tok->type = EQ;
 	} else {
 		sc_utils_die("Bad == operator");
@@ -86,7 +86,6 @@ static size_t lexer_read_lbra(struct compiler_state *cs)
 
 	tok->type = LBRA;
 	add_tok(cs, tok);
-	printf("LBRA");
 	return 1;
 }
 
@@ -96,7 +95,6 @@ static size_t lexer_read_rbra(struct compiler_state *cs)
 
 	tok->type = RBRA;
 	add_tok(cs, tok);
-	printf("RBRA ");
 	return 1;
 }
 
@@ -109,17 +107,12 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 	while (i < len) {
 		if (is_id(str[i])) {
 			i += lexer_read_id(cs, &str[i]);
-			printf("\n");
 		} else if (is_assign(str[i])) {
-			printf("\n");
-			break;
 			i += lexer_read_assign(cs, &str[i]);
 		} else if (is_lbra(str[i])) {
 			i += lexer_read_lbra(cs);
-			printf("\n");
 		} else if (is_rbra(str[i])) {
 			i += lexer_read_rbra(cs);
-			printf("\n");
 		} else if (str[i] == 0) {
 			break;
 		} else if (str[i] == ' ') {
@@ -137,9 +130,42 @@ void sc_lexer_tokenize(struct compiler_state *cs)
 	str = strtok(cs->buf, DELIMETER);
 
 	while (str) {
-		remove_newline(str);
-		printf("input [%s] | ", str);
+		lexer_remove_bad_symbols(str);
 		lexer_get_tokens(cs, str);
 		str = strtok(NULL, DELIMETER);
 	}
+}
+
+static void lexer_token_info(const struct token *tok)
+{
+	switch(tok->type) {
+	case ASSIGN:
+		printf("['=']");
+		break;
+	case IF:
+		printf("[IF]");
+		break;
+	case LBRA:
+		printf("['(']");
+		break;
+	case RBRA:
+		printf("[')']");
+		break;
+	case EQ:
+		printf("['==']");
+		break;
+	case ID:
+		printf("[ID: %s]", tok->str);
+		break;
+	default:
+		break;
+	}
+
+	printf(" ");
+}
+
+void sc_lexer_token_chain(const struct compiler_state *cs)
+{
+	for (size_t i = 0; i < cs->tokens.size; i++)
+		lexer_token_info(cs->tokens.elems[i]);
 }
