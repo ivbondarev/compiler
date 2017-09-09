@@ -6,8 +6,6 @@
 #ifndef _VECTOR_H
 #define _VECTOR_H
 
-#include "main.h"
-
 struct vector {
 	size_t size;
 	size_t capacity;

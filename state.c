@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "utils.h"
+#include "vector.h"
 
 static void state_read_file(struct compiler_state *cs, const char *path)
 {
@@ -32,6 +33,8 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 
 	memset(cs, 0, sizeof(*cs));
 	state_read_file(cs, argv[1]);
+
+	sc_vector_init(&cs->tokens);
 }
 
 void sc_state_destroy(const struct compiler_state *cs)
