@@ -33,7 +33,13 @@ enum tokens {
 	LBRA,
 	RBRA,
 	NUM,
-	IF
+	IF,
+	PLUS,
+	MINUS,
+	MUL,
+	DIV,
+	LPAR,
+	RPAR
 };
 
 struct token {

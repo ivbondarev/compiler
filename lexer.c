@@ -30,6 +30,26 @@ static int is_rbra(const char ch)
 	return ch == ')';
 }
 
+static int is_plus(const char ch)
+{
+	return ch == '+';
+}
+
+static int is_minus(const char ch)
+{
+	return ch == '-';
+}
+
+static int is_div(const char ch)
+{
+	return ch == '/';
+}
+
+static int is_mul(const char ch)
+{
+	return ch == '*';
+}
+
 static void add_tok(struct compiler_state *cs, struct token *tok)
 {
 	sc_vector_add(&cs->tokens, tok);
@@ -106,6 +126,41 @@ static size_t lexer_read_rbra(struct compiler_state *cs)
 	return 1;
 }
 
+static size_t lexer_read_plus(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = PLUS;
+	add_tok(cs, tok);
+	return 1;
+}
+
+static size_t lexer_read_minus(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = MINUS;
+	add_tok(cs, tok);
+	return 1;
+}
+
+static size_t lexer_read_mul(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = MUL;
+	add_tok(cs, tok);
+	return 1;
+}
+static size_t lexer_read_div(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = DIV;
+	add_tok(cs, tok);
+	return 1;
+}
+
 static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 {
 	size_t i = 0;
@@ -120,6 +175,14 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 			i += lexer_read_lbra(cs);
 		} else if (is_rbra(str[i])) {
 			i += lexer_read_rbra(cs);
+		} else if (is_plus(str[i])) {
+			i += lexer_read_plus(cs);
+		} else if (is_minus(str[i])) {
+			i += lexer_read_minus(cs);
+		} else if (is_div(str[i])) {
+			i += lexer_read_div(cs);
+		} else if (is_mul(str[i])) {
+			i += lexer_read_mul(cs);
 		} else if (str[i] == 0) {
 			break;
 		} else if (str[i] == ' ') {
@@ -163,6 +226,18 @@ static void lexer_token_info(const struct token *tok)
 		break;
 	case ID:
 		printf("[ID: %s]", tok->str);
+		break;
+	case PLUS:
+		printf("[+]");
+		break;
+	case MINUS:
+		printf("[-]");
+		break;
+	case DIV:
+		printf("[/]");
+		break;
+	case MUL:
+		printf("[*]");
 		break;
 	default:
 		break;
