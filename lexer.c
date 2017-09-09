@@ -68,16 +68,24 @@ static size_t lexer_read_assign(struct compiler_state *cs, const char *str)
 {
 	size_t len = strlen(str);
 	struct token *tok = malloc(sizeof(*tok));
+	char *buf = calloc(1, len);
+	size_t i = 0;
 
-	if (1 == len) {
+	while ('=' == str[i]) {
+		buf[i] = str[i];
+		i++;
+	}
+
+	if (1 == i) {
 		tok->type = ASSIGN;
-	} else if (2 == len && !strcmp(str, "==")) {
+	} else if (2 == i) {
 		tok->type = EQ;
 	} else {
-		sc_utils_die("Bad == operator");
+		sc_utils_die("Bad {=}+ operator");
 	}
+
 	add_tok(cs, tok);
-	return len;
+	return i;
 }
 
 static size_t lexer_read_lbra(struct compiler_state *cs)
@@ -102,7 +110,6 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 {
 	size_t i = 0;
 	size_t len = strlen(str);
-
 
 	while (i < len) {
 		if (is_id(str[i])) {
@@ -168,4 +175,5 @@ void sc_lexer_token_chain(const struct compiler_state *cs)
 {
 	for (size_t i = 0; i < cs->tokens.size; i++)
 		lexer_token_info(cs->tokens.elems[i]);
+	printf("\n");
 }
