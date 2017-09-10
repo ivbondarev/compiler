@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "main.h"
-#include "vector.h"
 #include "lexer.h"
 #include "utils.h"
 
@@ -53,6 +51,14 @@ static int is_mul(const char ch)
 static void add_tok(struct compiler_state *cs, struct token *tok)
 {
 	sc_vector_add(&cs->tokens, tok);
+}
+
+struct token *sc_lexer_tok(u32 type)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = type;
+	return tok;
 }
 
 static void lexer_remove_bad_symbols(char *str)

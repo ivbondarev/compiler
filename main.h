@@ -7,6 +7,7 @@
 
 #include "vector.h"
 
+struct node;
 struct virtual_machine;
 
 typedef uint32_t u32;
@@ -19,6 +20,7 @@ struct compiler_state {
 	size_t size;
 	struct vector tokens;
 	struct virtual_machine *vm;
+	struct node *parse_tree;
 };
 
 #endif /* !_MAIN_H */

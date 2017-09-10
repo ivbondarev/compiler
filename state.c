@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "vector.h"
 #include "vm.h"
+#include "tree.h"
 
 static void state_read_file(struct compiler_state *cs, const char *path)
 {
@@ -38,6 +39,8 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 	sc_vector_init(&cs->tokens);
 
 	cs->vm = malloc(sizeof(*cs->vm));
+	cs->parse_tree = malloc(sizeof(*cs->parse_tree));
+	sc_tree_init(cs->parse_tree);
 	sc_vm_init(cs->vm);
 }
 

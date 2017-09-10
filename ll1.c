@@ -3,14 +3,6 @@
 #include "main.h"
 #include "utils.h"
 
-static struct token *get_tok(u32 type)
-{
-	struct token *tok = malloc(sizeof(*tok));
-
-	tok->type = type;
-	return tok;
-}
-
 static void pop(struct vector *v)
 {
 	v->size--;
@@ -27,8 +19,8 @@ void sc_ll1_parse(struct compiler_state *cs)
 	table[N_A][ID] = 3;
 
 	sc_vector_init(&stack);
-	sc_vector_add(&stack, get_tok(EOS));
-	sc_vector_add(&stack, get_tok(N_S));
+	sc_vector_add(&stack, sc_lexer_tok(EOS));
+	sc_vector_add(&stack, sc_lexer_tok(N_S));
 
 	while (stack.size > 0) {
 		struct token *top_tok = stack.elems[stack.size - 1];
@@ -51,20 +43,20 @@ void sc_ll1_parse(struct compiler_state *cs)
 			case 1:
 				/* A -> id */
 				pop(&stack);
-				sc_vector_add(&stack, get_tok(N_A));
+				sc_vector_add(&stack, sc_lexer_tok(N_A));
 				break;
 			case 2:
 				/* S -> (S + A) */
 				pop(&stack);
-				sc_vector_add(&stack, get_tok(RPAR));
-				sc_vector_add(&stack, get_tok(N_A));
-				sc_vector_add(&stack, get_tok(PLUS));
-				sc_vector_add(&stack, get_tok(N_S));
-				sc_vector_add(&stack, get_tok(LPAR));
+				sc_vector_add(&stack, sc_lexer_tok(RPAR));
+				sc_vector_add(&stack, sc_lexer_tok(N_A));
+				sc_vector_add(&stack, sc_lexer_tok(PLUS));
+				sc_vector_add(&stack, sc_lexer_tok(N_S));
+				sc_vector_add(&stack, sc_lexer_tok(LPAR));
 				break;
 			case 3:
 				pop(&stack);
-				sc_vector_add(&stack, get_tok(ID));
+				sc_vector_add(&stack, sc_lexer_tok(ID));
 				break;
 			default:
 				sc_utils_die("Wrong grammar %d %d",

@@ -8,6 +8,7 @@
 #include "postfix.h"
 #include "vm.h"
 #include "ll1.h"
+#include "tree.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,13 @@ int main(int argc, char *argv[])
 	sc_lexer_token_chain(cs);
 
 	sc_ll1_parse(cs);
+
+	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(ID));
+	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(ID));
+	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(ID));
+	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(ID));
+	sc_tree_add_node(cs->parse_tree->nodes.elems[0], sc_lexer_tok(ID));
+	sc_tree_dump(cs->parse_tree);
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);
