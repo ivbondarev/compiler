@@ -17,6 +17,15 @@ void sc_vm_init(struct virtual_machine *vm)
 
 }
 
+static void vm_print_stack(struct virtual_machine *vm)
+{
+	printf("* bot stack *\n");
+	for (size_t i = 0; i < vm->sp; i++) {
+		printf("----------\n|   %" PRIi32 "   |\n----------\n",
+			vm->stack[i]);
+	}
+}
+
 static u32 vm_fetch_instr(struct virtual_machine *vm)
 {
 	return vm->bytecode[vm->pc++];
@@ -26,18 +35,31 @@ static void vm_exec_push(struct virtual_machine *vm, u32 instr)
 {
 	u32 num = (instr >> 16) & 0xFFFF;
 	vm->stack[vm->sp++] = num;
+	vm_print_stack(vm);
 }
 
 static void vm_exec_add(struct virtual_machine *vm)
 {
-	vm->stack[vm->sp - 2] = vm->stack[vm->sp - 1] + vm->stack[vm->sp - 2];
+	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 1]
+		+ (i32)vm->stack[vm->sp - 2]);
 	vm->sp--;
+	vm_print_stack(vm);
 }
 
 static void vm_exec_mul(struct virtual_machine *vm)
 {
-	vm->stack[vm->sp - 2] = vm->stack[vm->sp - 1] * vm->stack[vm->sp - 2];
+	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 1]
+		* (i32)vm->stack[vm->sp - 2]);
 	vm->sp--;
+	vm_print_stack(vm);
+}
+
+static void vm_exec_sub(struct virtual_machine *vm)
+{
+	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 2]
+		- (i32)vm->stack[vm->sp - 1]);
+	vm->sp--;
+	vm_print_stack(vm);
 }
 
 static void *op_handler[I__MAX] = {
@@ -46,7 +68,7 @@ static void *op_handler[I__MAX] = {
 	vm_exec_mul,
 	NULL,
 	vm_exec_add,
-	NULL,
+	vm_exec_sub,
 	NULL
 };
 
@@ -81,7 +103,7 @@ static int vm_print_instr_info(u32 instr)
 
 	switch (op) {
 	case IPUSH:
-		printf("IPUSH %" PRIu32 "\n", val);
+		printf("IPUSH %" PRIi32 "\n", val);
 		break;
 	case IMUL:
 		printf("IMUL\n");
@@ -118,5 +140,5 @@ void sc_vm_dump_bytecode(struct compiler_state *cs)
 
 void sc_vm_print_stack_result(struct compiler_state *cs)
 {
-	printf("Computation result: %" PRIu32 "\n", cs->vm->stack[0]);
+	printf("Computation result: %" PRIi32 "\n", (i32)cs->vm->stack[0]);
 }
