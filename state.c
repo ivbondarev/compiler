@@ -4,6 +4,7 @@
 #include "main.h"
 #include "utils.h"
 #include "vector.h"
+#include "vm.h"
 
 static void state_read_file(struct compiler_state *cs, const char *path)
 {
@@ -35,6 +36,9 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 	state_read_file(cs, argv[1]);
 
 	sc_vector_init(&cs->tokens);
+
+	cs->vm = malloc(sizeof(*cs->vm));
+	sc_vm_init(cs->vm);
 }
 
 void sc_state_destroy(const struct compiler_state *cs)

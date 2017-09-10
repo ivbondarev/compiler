@@ -1,7 +1,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#include "main.h"
+#include <stdio.h>
 
 /* Prints error message to stderr and exit */
 void sc_utils_die(const char *fmt, ...);

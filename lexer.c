@@ -20,12 +20,12 @@ static int is_assign(const char ch)
 	return ch == '=';
 }
 
-static int is_lbra(const char ch)
+static int is_lpar(const char ch)
 {
 	return ch == '(';
 }
 
-static int is_rbra(const char ch)
+static int is_rpar(const char ch)
 {
 	return ch == ')';
 }
@@ -108,20 +108,20 @@ static size_t lexer_read_assign(struct compiler_state *cs, const char *str)
 	return i;
 }
 
-static size_t lexer_read_lbra(struct compiler_state *cs)
+static size_t lexer_read_lpar(struct compiler_state *cs)
 {
 	struct token *tok = malloc(sizeof(*tok));
 
-	tok->type = LBRA;
+	tok->type = LPAR;
 	add_tok(cs, tok);
 	return 1;
 }
 
-static size_t lexer_read_rbra(struct compiler_state *cs)
+static size_t lexer_read_rpar(struct compiler_state *cs)
 {
 	struct token *tok = malloc(sizeof(*tok));
 
-	tok->type = RBRA;
+	tok->type = RPAR;
 	add_tok(cs, tok);
 	return 1;
 }
@@ -171,10 +171,10 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 			i += lexer_read_id(cs, &str[i]);
 		} else if (is_assign(str[i])) {
 			i += lexer_read_assign(cs, &str[i]);
-		} else if (is_lbra(str[i])) {
-			i += lexer_read_lbra(cs);
-		} else if (is_rbra(str[i])) {
-			i += lexer_read_rbra(cs);
+		} else if (is_lpar(str[i])) {
+			i += lexer_read_lpar(cs);
+		} else if (is_rpar(str[i])) {
+			i += lexer_read_rpar(cs);
 		} else if (is_plus(str[i])) {
 			i += lexer_read_plus(cs);
 		} else if (is_minus(str[i])) {
@@ -216,10 +216,10 @@ static void lexer_token_info(const struct token *tok)
 		printf("[IF]");
 		break;
 	case LBRA:
-		printf("['(']");
+		printf("['{']");
 		break;
 	case RBRA:
-		printf("[')']");
+		printf("['}']");
 		break;
 	case EQ:
 		printf("['==']");
@@ -239,6 +239,12 @@ static void lexer_token_info(const struct token *tok)
 	case MUL:
 		printf("[*]");
 		break;
+	case LPAR:
+		printf("[(]");
+		break;
+	case RPAR:
+		printf("[)]");
+		break;
 	default:
 		break;
 	}
@@ -250,5 +256,12 @@ void sc_lexer_token_chain(const struct compiler_state *cs)
 {
 	for (size_t i = 0; i < cs->tokens.size; i++)
 		lexer_token_info(cs->tokens.elems[i]);
+	printf("\n");
+}
+
+void sc_lexer_token_chain_vector(const struct vector *v)
+{
+	for (size_t i = 0; i < v->size; i++)
+		lexer_token_info(v->elems[i]);
 	printf("\n");
 }

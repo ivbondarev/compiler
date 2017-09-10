@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "utils.h"
 #include "state.h"
+#include "sort_station.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
 
 	sc_lexer_tokenize(cs);
 	sc_lexer_token_chain(cs);
+	sc_sort_station_make_postfix(cs);
 
 	sc_state_destroy(cs);
 	return 0;
