@@ -196,14 +196,17 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 void sc_lexer_tokenize(struct compiler_state *cs)
 {
 	char *str;
+	struct token *tok = malloc(sizeof(*tok));
 
 	str = strtok(cs->buf, DELIMETER);
-
 	while (str) {
 		lexer_remove_bad_symbols(str);
 		lexer_get_tokens(cs, str);
 		str = strtok(NULL, DELIMETER);
 	}
+
+	tok->type = EOS;
+	add_tok(cs, tok);
 }
 
 static void lexer_token_info(const struct token *tok)
@@ -244,6 +247,9 @@ static void lexer_token_info(const struct token *tok)
 		break;
 	case RPAR:
 		printf("[)]");
+		break;
+	case EOS:
+		printf("[EOS]");
 		break;
 	default:
 		break;

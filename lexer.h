@@ -27,19 +27,23 @@
  */
 
 enum tokens {
-	ID,
-	ASSIGN,
-	EQ,
-	LBRA,
-	RBRA,
-	NUM,
-	IF,
-	PLUS,
-	MINUS,
-	MUL,
-	DIV,
-	LPAR,
-	RPAR
+	ID,      /* 0 */
+	ASSIGN,  /* 1 */
+	EQ,      /* 2 */
+	LBRA,    /* 3 */
+	RBRA,    /* 4 */
+	NUM,     /* 5 */
+	IF,      /* 6 */
+	PLUS,    /* 7 */
+	MINUS,   /* 8 */
+	MUL,     /* 9 */
+	DIV,     /* 10 */
+	LPAR,    /* 11 */
+	RPAR,    /* 12 */
+	EOS,     /* 13 */
+	N_S,     /* 14 */
+	N_A,     /* 15 */
+	TOK__MAX /* 16 */
 };
 
 struct token {

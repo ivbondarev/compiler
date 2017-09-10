@@ -7,6 +7,7 @@
 #include "state.h"
 #include "postfix.h"
 #include "vm.h"
+#include "ll1.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +21,8 @@ int main(int argc, char *argv[])
 	sc_lexer_tokenize(cs);
 	/* Print tokens */
 	sc_lexer_token_chain(cs);
+
+	sc_ll1_parse(cs);
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);
