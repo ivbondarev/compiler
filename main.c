@@ -5,7 +5,7 @@
 #include "lexer.h"
 #include "utils.h"
 #include "state.h"
-#include "sort_station.h"
+#include "postfix.h"
 
 int main(int argc, char *argv[])
 {
