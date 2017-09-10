@@ -28,8 +28,26 @@ static void vm_exec_push(struct virtual_machine *vm, u32 instr)
 	vm->stack[vm->sp++] = num;
 }
 
+static void vm_exec_add(struct virtual_machine *vm)
+{
+	vm->stack[vm->sp - 2] = vm->stack[vm->sp - 1] + vm->stack[vm->sp - 2];
+	vm->sp--;
+}
+
+static void vm_exec_mul(struct virtual_machine *vm)
+{
+	vm->stack[vm->sp - 2] = vm->stack[vm->sp - 1] * vm->stack[vm->sp - 2];
+	vm->sp--;
+}
+
 static void *op_handler[I__MAX] = {
 	vm_exec_push,
+	NULL,
+	vm_exec_mul,
+	NULL,
+	vm_exec_add,
+	NULL,
+	NULL
 };
 
 static u32 vm_decode_instr(struct virtual_machine *vm, u32 instr)
@@ -40,14 +58,17 @@ static u32 vm_decode_instr(struct virtual_machine *vm, u32 instr)
 	if (op >= I__MAX)
 		sc_utils_die("Worng opcode: %" PRIu32 "\n", op);
 
-	handler = op_handler[op];
-	handler(vm, instr);
+	if (NULL != (handler = op_handler[op]))
+		handler(vm, instr);
 	return op;
 }
 
 void sc_vm_start(struct virtual_machine *vm)
-{	
-	u32 instr = vm_fetch_instr(vm);
+{
+	u32 instr;
+	vm->pc = 0;	
+	
+	instr = vm_fetch_instr(vm);
 
 	while (IHALT != vm_decode_instr(vm, instr))
 		instr = vm_fetch_instr(vm);
@@ -93,4 +114,9 @@ void sc_vm_dump_bytecode(struct compiler_state *cs)
 
 	while (!vm_print_instr_info(cs->vm->bytecode[pc]))
 		pc++;
+}
+
+void sc_vm_print_stack_result(struct compiler_state *cs)
+{
+	printf("Computation result: %" PRIu32 "\n", cs->vm->stack[0]);
 }

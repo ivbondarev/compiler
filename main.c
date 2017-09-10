@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "state.h"
 #include "postfix.h"
+#include "vm.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,12 @@ int main(int argc, char *argv[])
 	sc_lexer_tokenize(cs);
 	sc_lexer_token_chain(cs);
 	sc_sort_station_make_postfix(cs);
+
+	/* Now we can execute bytecode */
+	sc_vm_start(cs->vm);
+
+	/* Result is the single bottom frame on stack */
+	sc_vm_print_stack_result(cs);
 
 	sc_state_destroy(cs);
 	return 0;
