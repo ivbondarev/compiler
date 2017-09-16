@@ -215,65 +215,52 @@ void sc_lexer_tokenize(struct compiler_state *cs)
 	add_tok(cs, tok);
 }
 
-static void lexer_token_info(const struct token *tok)
+char *sc_lexer_token_info(const struct token *tok)
 {
 	switch(tok->type) {
 	case ASSIGN:
-		printf("['=']");
-		break;
+		return "['=']";
 	case IF:
-		printf("[IF]");
-		break;
+		return "[IF]";
 	case LBRA:
-		printf("['{']");
-		break;
+		return ("['{']");
 	case RBRA:
-		printf("['}']");
-		break;
+		return "['}']";
 	case EQ:
-		printf("['==']");
-		break;
+		return "['==']";
 	case ID:
-		printf("[ID: %s]", tok->str);
-		break;
+		return tok->str;
 	case PLUS:
-		printf("[+]");
-		break;
+		return "[+]";
 	case MINUS:
-		printf("[-]");
-		break;
+		return "[-]";
 	case DIV:
-		printf("[/]");
-		break;
+		return "[/]";
 	case MUL:
-		printf("[*]");
-		break;
+		return "[*]";
 	case LPAR:
-		printf("[(]");
-		break;
+		return "[(]";
 	case RPAR:
-		printf("[)]");
-		break;
+		return "[)]";
 	case EOS:
-		printf("[EOS]");
-		break;
+		return "[EOS]";
 	default:
 		break;
 	}
 
-	printf(" ");
+	return " ";
 }
 
 void sc_lexer_token_chain(const struct compiler_state *cs)
 {
 	for (size_t i = 0; i < cs->tokens.size; i++)
-		lexer_token_info(cs->tokens.elems[i]);
+		printf("%s\n", sc_lexer_token_info(cs->tokens.elems[i]));
 	printf("\n");
 }
 
 void sc_lexer_token_chain_vector(const struct vector *v)
 {
 	for (size_t i = 0; i < v->size; i++)
-		lexer_token_info(v->elems[i]);
+		printf("%s\n", sc_lexer_token_info(v->elems[i]));
 	printf("\n");
 }

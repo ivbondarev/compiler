@@ -21,6 +21,7 @@ void sc_tree_add_node(struct node *t, struct token *tok)
 	struct node *n = calloc(1, sizeof(*n));
 
 	sc_tree_init(n);
+	n->base_tok = tok;
 	n->parent = t;
 	sc_vector_add(&t->nodes, n);
 }
@@ -32,6 +33,8 @@ static void tree_print_node_info(FILE *fp, struct node *n)
 
 	/* printf("NODE [%p] : parent [%p]\n", n, n->parent); */
 	fprintf(fp, "\t\"%p\" -> \"%p\";\n", n->parent, n);
+	fprintf(fp, "\t\"%p\" [label=\"%s\"]\n", n,
+		sc_lexer_token_info(n->base_tok));
 }
 
 void sc_tree_dump(struct node *root)
