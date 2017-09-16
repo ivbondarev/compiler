@@ -336,6 +336,8 @@ void sc_lexer_print_tokens(const struct compiler_state *cs)
 char *sc_lexer_token_info(const struct token *tok)
 {
 	switch(tok->type) {
+	case N_PROG:
+		return "N_PROG";
 	case ASSIGN:
 		return "['=']";
 	case IF:

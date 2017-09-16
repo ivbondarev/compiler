@@ -4,15 +4,10 @@
 #include "lexer.h"
 #include "utils.h"
 
-static u32 internal_id = 10;
-
-void sc_tree_init(struct node *n)
+void sc_tree_init(struct node *n, struct token *base_tok)
 {
-	memset(n, 0, sizeof(*n));
 	sc_vector_init(&n->nodes);
-	/* One base Non-terminal S */
-	n->internal_id = internal_id++;
-	n->base_tok = sc_lexer_tok(N_PROG);
+	n->base_tok = base_tok;
 	n->parent = NULL;
 }
 
@@ -20,8 +15,7 @@ void sc_tree_add_node(struct node *t, struct token *tok)
 {
 	struct node *n = calloc(1, sizeof(*n));
 
-	sc_tree_init(n);
-	n->base_tok = tok;
+	sc_tree_init(n, tok);
 	n->parent = t;
 	sc_vector_add(&t->nodes, n);
 }
@@ -45,7 +39,8 @@ void sc_tree_dump(struct node *root)
 		sc_utils_die("Can't open graph");
 
 	fprintf(graph, "digraph G {\n");
-	tree_print_node_info(graph, root);	
+	tree_print_node_info(graph, root);
+	fprintf(graph, "\t\"(nil)\" [label=\"Parse tree\"]\n");
 	fprintf(graph, "}");
 
 	fclose(graph);

@@ -7,10 +7,9 @@ struct node {
 	struct vector nodes;
 	struct node *parent;
 	struct token *base_tok;
-	u32 internal_id;
 };
 
-void sc_tree_init(struct node *t);
+void sc_tree_init(struct node *t, struct token *base_tok);
 void sc_tree_dump(struct node *root);
 void sc_tree_add_node(struct node *t, struct token *tok);
 
