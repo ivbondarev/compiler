@@ -32,8 +32,7 @@ else
 	end
 end
 
-Parse tree:
-![alt text](https://imgur.com/cmO4iKP)
+![Parse tree:](https://i.imgur.com/WSoesKC.jpg)
 
 TODO:
 lexer+
