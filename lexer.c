@@ -335,33 +335,53 @@ void sc_lexer_print_tokens(const struct compiler_state *cs)
 
 char *sc_lexer_token_info(const struct token *tok)
 {
+	/* Temporary buffer for NUM terminal */
+	char *buf = calloc(1, BUFSIZ);
+
 	switch(tok->type) {
 	case N_PROG:
 		return "N_PROG";
+	case N_ASSIGN:
+		return "N_ASSIGN";
+	case N_IF:
+		return "N_IF";
+	case N_STATEMENT:
+		return "N_STATEMENT";
+	case N_COND:
+		return "N_COND";
+	case NUM:
+		sprintf(buf, "%u", tok->val);
+		return buf;
 	case ASSIGN:
-		return "['=']";
+		return "=";
 	case IF:
-		return "[IF]";
+		return "if";
 	case LBRA:
-		return ("['{']");
+		return ("{");
 	case RBRA:
-		return "['}']";
+		return "}";
 	case EQ:
-		return "['==']";
+		return "==";
 	case ID:
 		return tok->str;
 	case PLUS:
-		return "[+]";
+		return "+";
 	case MINUS:
-		return "[-]";
+		return "-";
 	case DIV:
-		return "[/]";
+		return "/";
 	case MUL:
-		return "[*]";
+		return "*";
 	case LPAR:
-		return "[(]";
+		return "(";
 	case RPAR:
-		return "[)]";
+		return ")";
+	case THEN:
+		return "then";
+	case ELSE:
+		return "else";
+	case END:
+		return "end";
 	case EOS:
 		return "[EOS]";
 	default:
