@@ -7,24 +7,23 @@
 #include "state.h"
 #include "postfix.h"
 #include "vm.h"
-#include "ll1.h"
+#include "parser.h"
 #include "tree.h"
 
 int main(int argc, char *argv[])
 {
-	struct compiler_state comp;
-	struct compiler_state *cs = &comp;
+	struct compiler_state cs;
 
 	/* Initialize compiler state */
-	sc_state_init(cs, argc, argv);
-
+	sc_state_init(&cs, argc, argv);
 	/* Convert input stream into tokens */
-	sc_lexer_tokenize(cs);
+	sc_lexer_tokenize(&cs);
 	/* Print tokens */
-	sc_lexer_print_tokens(cs);
+	sc_lexer_print_tokens(&cs);
+	/* Parse LL(k) grammar */
+	sc_parser_begin(&cs);
 
-	/*sc_ll1_parse(cs);
-
+	/*
 	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(LPAR));
 	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(RPAR));
 	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(EQ));
@@ -44,6 +43,6 @@ int main(int argc, char *argv[])
 	/* Result is the single bottom frame on stack */
 	//sc_vm_print_stack_result(cs);
 
-	sc_state_destroy(cs);
+	sc_state_destroy(&cs);
 	return 0;
 }
