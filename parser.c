@@ -45,7 +45,7 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 			break;
 		}
 
-		parser_prod(cs, tok_id, N_STATEMENT, nn);
+		parser_prod(cs, tok_id, N_STATEMENT, n);
 		break;
 	case N_ASSIGN:
 		tok = cs->tokens.elems[*tok_id];
