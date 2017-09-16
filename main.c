@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
 	/* Convert input stream into tokens */
 	sc_lexer_tokenize(cs);
 	/* Print tokens */
-	sc_lexer_token_chain(cs);
+	sc_lexer_print_tokens(cs);
 
-	sc_ll1_parse(cs);
+	/*sc_ll1_parse(cs);
 
 	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(LPAR));
 	sc_tree_add_node(cs->parse_tree, sc_lexer_tok(RPAR));
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	struct node *tmp = cs->parse_tree->nodes.elems[0];
 	sc_tree_add_node(tmp, sc_lexer_tok(IF));
 	sc_tree_add_node(cs->parse_tree->nodes.elems[2], sc_lexer_tok(RBRA));
-	sc_tree_dump(cs->parse_tree);
+	sc_tree_dump(cs->parse_tree);*/
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);

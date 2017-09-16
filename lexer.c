@@ -28,6 +28,16 @@ static int is_rpar(const char ch)
 	return ch == ')';
 }
 
+static int is_lbra(char ch)
+{
+	return ch == '{';
+}
+
+static int is_rbra(char ch)
+{
+	return ch == '}';
+}
+
 static int is_plus(const char ch)
 {
 	return ch == '+';
@@ -84,6 +94,27 @@ static size_t lexer_read_id(struct compiler_state *cs, const char *str)
 	if (!strcmp(buf, "if")) {
 		tok->type = IF;
 		free(buf);
+	} else if (!strcmp(buf, "else")) {
+		tok->type = ELSE;
+		free(buf);
+	} else if (!strcmp(buf, "end")) {
+		tok->type = END;
+		free(buf);
+	} else if (!strcmp(buf, "then")) {
+		tok->type = THEN;
+		free(buf);
+	} else {
+		size_t dig_count = 0;
+
+		for (size_t j = 0; j < i; j++)
+			if (isdigit(buf[j]))
+				dig_count++;
+
+		if (dig_count == i) {
+			tok->type = NUM;
+			tok->val = atoi(buf);
+			free(buf);
+		}
 	}
 
 	add_tok(cs, tok);
@@ -128,6 +159,24 @@ static size_t lexer_read_rpar(struct compiler_state *cs)
 	struct token *tok = malloc(sizeof(*tok));
 
 	tok->type = RPAR;
+	add_tok(cs, tok);
+	return 1;
+}
+
+static size_t lexer_read_lbra(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = LBRA;
+	add_tok(cs, tok);
+	return 1;
+}
+
+static size_t lexer_read_rbra(struct compiler_state *cs)
+{
+	struct token *tok = malloc(sizeof(*tok));
+
+	tok->type = RBRA;
 	add_tok(cs, tok);
 	return 1;
 }
@@ -181,6 +230,10 @@ static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 			i += lexer_read_lpar(cs);
 		} else if (is_rpar(str[i])) {
 			i += lexer_read_rpar(cs);
+		} else if (is_lbra(str[i])) {
+			i += lexer_read_lbra(cs);
+		} else if (is_rbra(str[i])) {
+			i += lexer_read_rbra(cs);
 		} else if (is_plus(str[i])) {
 			i += lexer_read_plus(cs);
 		} else if (is_minus(str[i])) {
@@ -213,6 +266,71 @@ void sc_lexer_tokenize(struct compiler_state *cs)
 
 	tok->type = EOS;
 	add_tok(cs, tok);
+}
+
+void sc_lexer_print_tokens(const struct compiler_state *cs)
+{
+	for (size_t i = 0; i < cs->tokens.size; i++) {
+		const struct token *tok = cs->tokens.elems[i];
+
+		switch(tok->type) {
+		case ASSIGN:
+			printf("%s", "['=']");
+			break;
+		case IF:
+			printf("%s", "[IF]");
+			break;
+		case LBRA:
+			printf("%s", "['{']");
+			break;
+		case RBRA:
+			printf("%s", "['}']");
+			break;
+		case EQ:
+			printf("%s", "['==']");
+			break;
+		case ID:
+			printf("[ID : %s]", tok->str);
+			break;
+		case PLUS:
+			printf("%s", "[+]");
+			break;
+		case MINUS:
+			printf("%s", "[-]");
+			break;
+		case DIV:
+			printf("%s", "[/]");
+			break;
+		case MUL:
+			printf("%s", "[*]");
+			break;
+		case LPAR:
+			printf("%s", "[(]");
+			break;
+		case RPAR:
+			printf("%s", "[)]");
+			break;
+		case NUM:
+			printf("[NUM : %u]", tok->val);
+			break;
+		case END:
+			printf("%s", "[END]");
+			break;
+		case THEN:
+			printf("%s", "[THEN]");
+			break;
+		case ELSE:
+			printf("%s", "[ELSE]");
+			break;
+		case EOS:
+			printf("%s", "[EOS]");
+			break;
+		default:
+			sc_utils_die("Ivalid token type");
+		}
+	}
+
+	printf("\n");
 }
 
 char *sc_lexer_token_info(const struct token *tok)

@@ -3,7 +3,7 @@
 #include "lexer.h"
 #include "emit.h"
 #include "vm.h"
-
+/*
 static int sort_station_priority(const struct token *tok)
 {
 	switch (tok->type) {
@@ -103,4 +103,4 @@ void sc_sort_station_make_postfix(struct compiler_state *cs)
 	sc_lexer_token_chain_vector(&result);
 	sc_emit_token_chain(cs, &result);
 	sc_vm_dump_bytecode(cs);
-}
+}*/

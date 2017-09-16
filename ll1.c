@@ -3,14 +3,14 @@
 #include "main.h"
 #include "utils.h"
 
-static void pop(struct vector *v)
+/*static void pop(struct vector *v)
 {
 	v->size--;
-}
+}*/
 
 void sc_ll1_parse(struct compiler_state *cs)
 {
-	struct vector stack;
+/*	struct vector stack;
 	size_t i = 0;
 	i32 table[TOK__MAX + 1][TOK__MAX + 1] = { { -1 } };
 
@@ -41,12 +41,12 @@ void sc_ll1_parse(struct compiler_state *cs)
 
 			switch (table[top_tok->type][input_tok->type]) {
 			case 1:
-				/* A -> id */
+				// A -> id 
 				pop(&stack);
 				sc_vector_add(&stack, sc_lexer_tok(N_A));
 				break;
 			case 2:
-				/* S -> (S + A) */
+				//S -> (S + A) 
 				pop(&stack);
 				sc_vector_add(&stack, sc_lexer_tok(RPAR));
 				sc_vector_add(&stack, sc_lexer_tok(N_A));
@@ -66,6 +66,7 @@ void sc_ll1_parse(struct compiler_state *cs)
 		}
 		
 	}
+	*/
 
 	printf("Grammar is correct\n");
 }

@@ -12,7 +12,7 @@ void sc_tree_init(struct node *n)
 	sc_vector_init(&n->nodes);
 	/* One base Non-terminal S */
 	n->internal_id = internal_id++;
-	n->base_tok = sc_lexer_tok(N_S);
+	n->base_tok = sc_lexer_tok(N_PROG);
 	n->parent = NULL;
 }
 
