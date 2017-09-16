@@ -2,6 +2,7 @@ This is a simple compiler I've made for study purpose.
 
 Implementation based on recursive descent parser with this LL(3) grammar:
 
+'''c
 PROG -> STATEMENT
 STATEMENT -> ASSIGN STATEMENT | IF STATEMENT | WHILE STATEMENT |
 	ASSIGN EOS | IF EOS| WHILE EOS
@@ -11,9 +12,9 @@ WHILE -> while ( COND ) do STATEMENT end
 COND -> ID == ID | ID == NUM
 ID -> name1
 NUM -> num1
-
+'''
 Possible program:
-
+'''c
 var1 = 3
 var2 = 8
 var3 = var2
@@ -31,7 +32,7 @@ else
 		var2 = 352
 	end
 end
-
+'''
 ![Parse tree:](https://i.imgur.com/WSoesKC.jpg)
 
 TODO:
