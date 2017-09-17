@@ -9,6 +9,7 @@
 
 struct node;
 struct virtual_machine;
+struct ir_state;
 
 typedef uint32_t u32;
 typedef int32_t i32;
@@ -21,6 +22,7 @@ struct compiler_state {
 	struct vector tokens;
 	struct virtual_machine *vm;
 	struct node *parse_tree;
+	struct ir_state *irs;
 };
 
 #endif /* !_MAIN_H */

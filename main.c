@@ -10,6 +10,7 @@
 #include "parser.h"
 #include "tree.h"
 #include "ast.h"
+#include "ir.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +30,10 @@ int main(int argc, char *argv[])
 	sc_ast_transform(cs.parse_tree);
 	/* Dump AST */
 	sc_tree_dump(cs.parse_tree);
+	/* Generate IR */
+	sc_ir_make(cs.irs, cs.parse_tree);
+	/* Dump IR to stdout */
+	sc_ir_print_tac(cs.irs);
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);
