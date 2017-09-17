@@ -9,6 +9,7 @@
 #include "vm.h"
 #include "parser.h"
 #include "tree.h"
+#include "ast.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,10 @@ int main(int argc, char *argv[])
 	/* Parse LL(k) grammar */
 	sc_parser_begin(&cs);
 	/* Dump parse tree to graphviz foramt */
+	sc_tree_dump(cs.parse_tree);
+	/* Transfrom derivation tree to AST */
+	sc_ast_transform(cs.parse_tree);
+	/* Dump AST */
 	sc_tree_dump(cs.parse_tree);
 
 	/* Produce RPN for arithmetic operators */

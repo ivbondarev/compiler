@@ -29,11 +29,12 @@ static void tree_print_node_info(FILE *fp, struct node *n)
 		tree_print_node_info(fp, n->nodes.elems[i]);
 
 	tok_info = sc_lexer_token_info(n->base_tok);
-	fprintf(fp, "\t\"%p\" -> \"%p\";\n", n->parent, n);
+	if (NULL != n->parent)
+		fprintf(fp, "\t\"%p\" -> \"%p\";\n", n->parent, n);
 	fprintf(fp, "\t\"%p\" [label=\"%s\"]\n", n, tok_info);
 
 	if (n->base_tok->type == NUM)
-		free(n->base_tok);
+		free(tok_info);
 }
 
 void sc_tree_dump(struct node *root)
@@ -45,7 +46,6 @@ void sc_tree_dump(struct node *root)
 
 	fprintf(graph, "digraph G {\n");
 	tree_print_node_info(graph, root);
-	fprintf(graph, "\t\"(nil)\" [label=\"Parse tree\"]\n");
 	fprintf(graph, "}");
 
 	fclose(graph);

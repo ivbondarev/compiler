@@ -37,3 +37,21 @@ void sc_vector_free(const struct vector *v)
 {
 	free(v->elems);
 }
+
+void vector_move_elems_left(struct vector *v, size_t del)
+{
+	size_t num = v->size - del - 1;
+
+	for (size_t i = 0; i < num; i++) {
+		v->elems[del] = v->elems[del + 1];
+		del++;
+	}
+}
+
+void sc_vector_remove_elem(struct vector *v, size_t i)
+{
+	free(v->elems[i]);
+	if (i != v->size - 1)
+		vector_move_elems_left(v, i);
+	v->size--;
+}

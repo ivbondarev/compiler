@@ -18,5 +18,7 @@ void sc_vector_init(struct vector *v);
 void *sc_vector_add(struct vector *v, void *elem);
 /* Destroys memory, belongs to vector */
 void sc_vector_free(const struct vector *v);
+/* Remove 1 element from vector */
+void sc_vector_remove_elem(struct vector *v, size_t i);
 
 #endif /* !_VECTOR_H */
