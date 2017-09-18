@@ -58,9 +58,16 @@ static void ir_instr_info(const struct ir_state *irs,
 {
 	struct ir_obj *obj1;
 	struct ir_obj *obj2;
-	//struct ir_obj *obj3;
 
 	switch (ins->type) {
+	case IR_INSTR_JMP:
+		printf("jmp %d", ins->go_to);
+		printf("\n");
+		break;
+	case IR_INSTR_JNE:
+		printf("jne %d", ins->go_to);
+		printf("\n");
+		break;
 	case IR_INSTR_ASSIGN:
 		obj1 = ins->result;
 		obj2 = ins->op1;
@@ -89,8 +96,10 @@ static void ir_instr_info(const struct ir_state *irs,
 
 void sc_ir_print_tac(const struct ir_state *irs)
 {
-	for (size_t i = 0; i < irs->tac.size; i++)
+	for (size_t i = 0; i < irs->tac.size; i++) {
+		printf("%lu) ", i);
 		ir_instr_info(irs, irs->tac.elems[i]);
+	}
 }
 
 static struct token *node_tok(struct node *n, size_t i)
@@ -154,6 +163,28 @@ void sc_ir_make(struct ir_state *irs, struct node *ast_node)
 		ins->op2 = obj2;
 
 		sc_vector_add(&irs->tac, ins);
+		return;
+	}
+
+	if (N_IF == ast_node->base_tok->type) {
+		struct ir_instr *ins_jne = ir_newins();
+		struct ir_instr *ins_jmp = ir_newins();
+
+		ins_jne->type = IR_INSTR_JNE;
+		ins_jmp->type = IR_INSTR_JMP;
+
+		/* Condition */
+		sc_ir_make(irs, ast_node->nodes.elems[0]);
+		/* Avoid true condition */
+		sc_vector_add(&irs->tac, ins_jne);
+		/* True */
+		sc_ir_make(irs, ast_node->nodes.elems[1]);
+		/* Avoid else condition */
+		sc_vector_add(&irs->tac, ins_jmp);
+		ins_jne->go_to = (i32)irs->tac.size;
+		/* False */
+		sc_ir_make(irs, ast_node->nodes.elems[2]);
+		ins_jmp->go_to = (i32)irs->tac.size;
 		return;
 	}
 

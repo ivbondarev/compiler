@@ -24,6 +24,7 @@ struct ir_obj {
 
 struct ir_instr {
 	u32 type;
+	i32 go_to; /* For j* instructions */
 	struct ir_obj *op1;
 	struct ir_obj *op2;
 	struct ir_obj *result;
