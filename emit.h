@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-void sc_emit_push(struct compiler_state *cs, u32 val);
-void sc_emit_token_chain(struct compiler_state *cs, struct vector *tokens);
+/* Emit TAC to bytecode */
+void sc_emit_tac(struct compiler_state *cs);
 
 #endif /* !_EMIT_H_ */

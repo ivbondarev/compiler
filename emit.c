@@ -4,89 +4,67 @@
 #include "vm.h"
 #include "utils.h"
 #include "lexer.h"
+#include "ir.h"
 
-static void emit_instr(struct compiler_state *cs, u32 instr)
+static void emit_instr(struct virtual_machine *vm, u32 instr)
 {
-	cs->vm->bytecode[cs->vm->pc++] = instr;
+	vm->bytecode[vm->pc++] = instr;
 }
 
-void sc_emit_push(struct compiler_state *cs, u32 val)
+static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
+		     u32 imm32)
 {
-	u32 instr = IPUSH;
+	u32 instr = 0;
 
-	instr |= (val & 0xFFFF) << 16;
-	emit_instr(cs, instr);
+	instr |= MOV << 24;
+	instr |= mod << 22;
+	instr |= dst << 16;
+
+	if (0 == mod) {
+		instr |= src << 8;
+		emit_instr(vm, instr);
+		return;
+	}
+
+	emit_instr(vm, imm32);
 }
 
-void sc_emit_pop(struct compiler_state *cs)
+static void emit_jmp(struct virtual_machine *vm, u32 imm32)
 {
-	u32 instr = IPOP;
+	u32 instr = 0;
 
-	emit_instr(cs, instr);
+	instr |= JMP << 24;
+	emit_instr(vm, instr);
+	emit_instr(vm, imm32);
 }
 
-void sc_emit_mul(struct compiler_state *cs)
+static void emit_hlt(struct virtual_machine *vm)
 {
-	u32 instr = IMUL;
+	u32 instr = HLT << 24;
 
-	emit_instr(cs, instr);
+	emit_instr(vm, instr);
 }
 
-void sc_emit_div(struct compiler_state *cs)
+void sc_emit_tac(struct compiler_state *cs)
 {
-	u32 instr = IDIV;
+	struct ir_instr *ir_ins;
+	size_t total = 0;
 
-	emit_instr(cs, instr);
-}
+	for (size_t i = 0; i < cs->irs->tac.size; i++) {
+		ir_ins = cs->irs->tac.elems[i];
 
-void sc_emit_add(struct compiler_state *cs)
-{
-	u32 instr = IADD;
-
-	emit_instr(cs, instr);
-}
-
-void sc_emit_sub(struct compiler_state *cs)
-{
-	u32 instr = ISUB;
-
-	emit_instr(cs, instr);
-}
-
-void sc_emit_halt(struct compiler_state *cs)
-{
-	u32 instr = IHALT;
-
-	emit_instr(cs, instr);
-}
-
-void sc_emit_token_chain(struct compiler_state *cs, struct vector *tokens)
-{
-	for (size_t i = 0; i < tokens->size; i++) {
-		struct token *tok = tokens->elems[i];
-		u32 val;
-
-		switch (tok->type) {
-		case ID:
-			val = (u32)atoi(tok->str) & 0xFFFF;
-			sc_emit_push(cs, val);
-			break;
-		case PLUS:
-			sc_emit_add(cs);
-			break;
-		case MINUS:
-			sc_emit_sub(cs);
-			break;
-		case MUL:
-			sc_emit_mul(cs);
-			break;
-		case DIV:
-			sc_emit_div(cs);
+		switch (ir_ins->type) {
+		case IR_INSTR_JMP:
+			emit_jmp(cs->vm, ir_ins->go_to);
+			total++;
 			break;
 		default:
 			break;
 		}
 	}
 
-	sc_emit_halt(cs);
+	emit_hlt(cs->vm);
+	total++;
+
+	printf("Total instructions: %lu\n", total);
 }

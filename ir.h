@@ -8,7 +8,8 @@ enum {
 	IR_INSTR_ASSIGN, /* a = b*/
 	IR_INSTR_CMP, /* a == b */
 	IR_INSTR_JMP, /* jmp xxx */
-	IR_INSTR_JNE /* jne xxx */
+	IR_INSTR_JNE, /* jne xxx */
+	IR_INSTR_HLT
 };
 
 enum {

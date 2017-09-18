@@ -7,23 +7,25 @@
 
 #define VM_STACK_SIZE 100
 #define VM_INSTRUCTIONS_SIZE 100
-#define OP_MASK 0xFF
+#define OP(x) (x >> 24) & 0xFF
+#define MOD(x) (x >> 22) & 0x03
+#define SLOT_DST(x) (x >> 16) & 0x3F
+#define SLOT_SRC(x) (x >> 8) & 0xFF
+
+/*
+ * Instruction format:
+ * OP | MOD | REG | REG | 0 |       |
+ * OP | MOD | 0   | 0   | 0 | IMM32 |
+ * OP | MOD | REG | 0   | 0 | IMM32 |
+ * ---|-----|-----|-----|---|-------|
+ * 8  | 2   | 6   | 8   | 8 |   32  |
+ */
 
 void sc_vm_init(struct virtual_machine *vm)
 {
 	memset(vm, 0, sizeof(*vm));
 	vm->stack = calloc(1, VM_STACK_SIZE * sizeof(*vm->stack));
 	vm->bytecode = calloc(1, VM_INSTRUCTIONS_SIZE * sizeof(*vm->bytecode));
-
-}
-
-static void vm_print_stack(struct virtual_machine *vm)
-{
-	printf("* bot stack *\n");
-	for (size_t i = 0; i < vm->sp; i++) {
-		printf("----------\n|   %" PRIi32 "   |\n----------\n",
-			vm->stack[i]);
-	}
 }
 
 static u32 vm_fetch_instr(struct virtual_machine *vm)
@@ -31,50 +33,52 @@ static u32 vm_fetch_instr(struct virtual_machine *vm)
 	return vm->bytecode[vm->pc++];
 }
 
-static void vm_exec_push(struct virtual_machine *vm, u32 instr)
+static void vm_set_slot(struct virtual_machine *vm, u32 slot_id, u32 val)
 {
-	u32 num = (instr >> 16) & 0xFFFF;
-	vm->stack[vm->sp++] = num;
-	vm_print_stack(vm);
+	*(vm->bp + slot_id) = val;
 }
 
-static void vm_exec_add(struct virtual_machine *vm)
+static u32 vm_read_slot(struct virtual_machine *vm, u32 slot_id)
 {
-	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 1]
-		+ (i32)vm->stack[vm->sp - 2]);
-	vm->sp--;
-	vm_print_stack(vm);
+	return *(vm->bp + slot_id);
 }
 
-static void vm_exec_mul(struct virtual_machine *vm)
+static void vm_instr_mov(struct virtual_machine *vm, u32 instr)
 {
-	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 1]
-		* (i32)vm->stack[vm->sp - 2]);
-	vm->sp--;
-	vm_print_stack(vm);
+	u8 mod = MOD(instr);
+	u8 dst_slot = SLOT_DST(instr);
+	u32 src_slot = SLOT_SRC(instr);
+	u32 imm32;
+
+	switch (mod) {
+	case MOV_SLOT_SLOT:
+		/* mov slot, slot */
+		vm_set_slot(vm, dst_slot, vm_read_slot(vm, src_slot));
+		break;
+	case MOV_SLOT_IMM32:
+		/* mov slot, imm32 */
+		imm32 = vm_fetch_instr(vm);
+		vm_set_slot(vm, dst_slot, imm32);
+		break;
+	}
 }
 
-static void vm_exec_sub(struct virtual_machine *vm)
+static void vm_instr_jmp(struct virtual_machine *vm, u32 instr)
 {
-	vm->stack[vm->sp - 2] = (u32)((i32)vm->stack[vm->sp - 2]
-		- (i32)vm->stack[vm->sp - 1]);
-	vm->sp--;
-	vm_print_stack(vm);
+	i32 imm32 = (i32)vm_fetch_instr(vm);
+
+	vm->pc += imm32;
 }
 
 static void *op_handler[I__MAX] = {
-	vm_exec_push,
+	vm_instr_mov,
 	NULL,
-	vm_exec_mul,
-	NULL,
-	vm_exec_add,
-	vm_exec_sub,
-	NULL
+	vm_instr_jmp
 };
 
 static u32 vm_decode_instr(struct virtual_machine *vm, u32 instr)
 {
-	u32 op = instr & OP_MASK;
+	u32 op = OP(instr);
 	void (*handler)(struct virtual_machine *, u32);
 
 	if (op >= I__MAX)
@@ -92,38 +96,33 @@ void sc_vm_start(struct virtual_machine *vm)
 	
 	instr = vm_fetch_instr(vm);
 
-	while (IHALT != vm_decode_instr(vm, instr))
+	while (HLT != vm_decode_instr(vm, instr))
 		instr = vm_fetch_instr(vm);
 }
 
-static int vm_print_instr_info(u32 instr)
+static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 {
-	u32 op = instr & 0xFF;
-	u32 val = instr >> 16;
+	u32 op = OP(instr);
+	u8 mod = MOD(instr);
+	u8 dst_slot = SLOT_DST(instr);
+	u32 src_slot = SLOT_SRC(instr);
+	u32 imm32;
 
 	switch (op) {
-	case IPUSH:
-		printf("IPUSH %" PRIi32 "\n", val);
+	case MOV:
+		if (MOV_SLOT_SLOT == mod) {
+			printf("mov %u, %u\n", dst_slot, src_slot);
+		} else if (MOV_SLOT_IMM32 == mod) {
+			imm32 = vm_fetch_instr(vm);
+			printf("mov %u, %" PRIu32 "\n", dst_slot, imm32);
+		}
 		break;
-	case IMUL:
-		printf("IMUL\n");
+	case JMP:
+		imm32 = vm_fetch_instr(vm);
+		printf("jmp %" PRIi32 "\n", (i32)imm32);
 		break;
-	case IADD:
-		printf("IADD\n");
-		break;
-	case IDIV:
-		printf("IDIV\n");
-		break;
-	case ISUB:
-		printf("ISUB\n");
-		break;
-	case IPOP:
-		printf("IPOP\n");
-		break;
-	case IHALT:
-		printf("IHALT\n");
-		return 1;
 	default:
+		printf("Wrong OP: %u, pc = %" PRIu64 "\n", op, vm->pc);
 		return 1;
 	};
 
@@ -132,13 +131,9 @@ static int vm_print_instr_info(u32 instr)
 
 void sc_vm_dump_bytecode(struct compiler_state *cs)
 {
-	u32 pc = 0;
+	cs->vm->pc = 0;
 
-	while (!vm_print_instr_info(cs->vm->bytecode[pc]))
-		pc++;
-}
-
-void sc_vm_print_stack_result(struct compiler_state *cs)
-{
-	printf("Computation result: %" PRIi32 "\n", (i32)cs->vm->stack[0]);
+	while (!vm_print_instr_info(cs->vm, cs->vm->bytecode[cs->vm->pc++]))
+		;
+	printf("pc = %" PRIu64 "\n", cs->vm->pc);
 }

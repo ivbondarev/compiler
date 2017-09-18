@@ -60,6 +60,9 @@ static void ir_instr_info(const struct ir_state *irs,
 	struct ir_obj *obj2;
 
 	switch (ins->type) {
+	case IR_INSTR_HLT:
+		printf("hlt\n");
+		break;
 	case IR_INSTR_JMP:
 		printf("jmp %d", ins->go_to);
 		printf("\n");
@@ -109,7 +112,7 @@ static struct token *node_tok(struct node *n, size_t i)
 	return ni->base_tok;
 }
 
-void sc_ir_make(struct ir_state *irs, struct node *ast_node)
+void ir_gen(struct ir_state *irs, struct node *ast_node)
 {
 	if (ASSIGN == ast_node->base_tok->type) {
 		struct node *n1 = ast_node->nodes.elems[0];
@@ -174,20 +177,31 @@ void sc_ir_make(struct ir_state *irs, struct node *ast_node)
 		ins_jmp->type = IR_INSTR_JMP;
 
 		/* Condition */
-		sc_ir_make(irs, ast_node->nodes.elems[0]);
+		ir_gen(irs, ast_node->nodes.elems[0]);
 		/* Avoid true condition */
 		sc_vector_add(&irs->tac, ins_jne);
 		/* True */
-		sc_ir_make(irs, ast_node->nodes.elems[1]);
+		ir_gen(irs, ast_node->nodes.elems[1]);
 		/* Avoid else condition */
 		sc_vector_add(&irs->tac, ins_jmp);
 		ins_jne->go_to = (i32)irs->tac.size;
 		/* False */
-		sc_ir_make(irs, ast_node->nodes.elems[2]);
+		ir_gen(irs, ast_node->nodes.elems[2]);
 		ins_jmp->go_to = (i32)irs->tac.size;
 		return;
 	}
 
 	for (size_t i = 0; i < ast_node->nodes.size; i++)
-		sc_ir_make(irs, ast_node->nodes.elems[i]);
+		ir_gen(irs, ast_node->nodes.elems[i]);
+}
+
+
+void sc_ir_make(struct ir_state *irs, struct node *ast_node)
+{
+	struct ir_instr *ins_halt = ir_newins();
+
+	ins_halt->type = IR_INSTR_HLT;
+	ir_gen(irs, ast_node);
+	sc_vector_add(&irs->tac, ins_halt);
+
 }

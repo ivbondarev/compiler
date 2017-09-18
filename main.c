@@ -11,6 +11,7 @@
 #include "tree.h"
 #include "ast.h"
 #include "ir.h"
+#include "emit.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 	/* Convert input stream into tokens */
 	sc_lexer_tokenize(&cs);
 	/* Print tokens */
-	sc_lexer_print_tokens(&cs);
+	//sc_lexer_print_tokens(&cs);
 	/* Parse LL(k) grammar */
 	sc_parser_begin(&cs);
 	/* Dump parse tree to graphviz foramt */
@@ -34,6 +35,10 @@ int main(int argc, char *argv[])
 	sc_ir_make(cs.irs, cs.parse_tree);
 	/* Dump IR to stdout */
 	sc_ir_print_tac(cs.irs);
+	/* Transform IR to bytecode */
+	sc_emit_tac(&cs);
+	/* Show bytecode*/
+	sc_vm_dump_bytecode(&cs);
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);
