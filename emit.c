@@ -18,14 +18,15 @@ static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
 
 	instr |= MOV << 24;
 	instr |= mod << 22;
-	instr |= dst << 16;
+	instr |= (dst & 0x3F) << 16;
 
-	if (0 == mod) {
+	if (MOV_SLOT_SLOT == mod) {
 		instr |= src << 8;
 		emit_instr(vm, instr);
 		return;
 	}
 
+	emit_instr(vm, instr);
 	emit_instr(vm, imm32);
 }
 
@@ -48,6 +49,8 @@ static void emit_hlt(struct virtual_machine *vm)
 void sc_emit_tac(struct compiler_state *cs)
 {
 	struct ir_instr *ir_ins;
+	struct ir_obj *op1;
+	struct ir_obj *op2;
 	size_t total = 0;
 
 	for (size_t i = 0; i < cs->irs->tac.size; i++) {
@@ -56,6 +59,17 @@ void sc_emit_tac(struct compiler_state *cs)
 		switch (ir_ins->type) {
 		case IR_INSTR_JMP:
 			emit_jmp(cs->vm, ir_ins->go_to);
+			total++;
+			break;
+		case IR_INSTR_ASSIGN:
+			op1 = ir_ins->result;
+			op2 = ir_ins->op1;
+			if (IR_OBJ_VAR == op2->type)
+				emit_mov(cs->vm, MOV_SLOT_SLOT, op1->global_id,
+					 op2->global_id, 0);
+			else
+				emit_mov(cs->vm, MOV_SLOT_IMM32, op1->global_id,
+					 0, op2->val);
 			total++;
 			break;
 		default:

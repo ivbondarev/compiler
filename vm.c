@@ -114,12 +114,16 @@ static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 			printf("mov %u, %u\n", dst_slot, src_slot);
 		} else if (MOV_SLOT_IMM32 == mod) {
 			imm32 = vm_fetch_instr(vm);
-			printf("mov %u, %" PRIu32 "\n", dst_slot, imm32);
+			printf("movk %u, %" PRIu32 "\n", dst_slot, imm32);
 		}
 		break;
 	case JMP:
 		imm32 = vm_fetch_instr(vm);
 		printf("jmp %" PRIi32 "\n", (i32)imm32);
+		break;
+	case HLT:
+		printf("hlt\n");
+		return 1;
 		break;
 	default:
 		printf("Wrong OP: %u, pc = %" PRIu64 "\n", op, vm->pc);
