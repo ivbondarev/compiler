@@ -7,6 +7,7 @@ enum instructions {
 	MOV,
 	HLT,
 	JMP,
+	CMP,
 	I__MAX
 };
 

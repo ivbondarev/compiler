@@ -19,7 +19,17 @@
  * OP | MOD | REG | 0   | 0 | IMM32 |
  * ---|-----|-----|-----|---|-------|
  * 8  | 2   | 6   | 8   | 8 |   32  |
+ *
+ * STATUS32:
+ * | 0 | Z |
+ * |---|---|
+ * |31 | 1 |
  */
+
+enum {
+	FLG_ZERO,
+	FLG_CARRY
+};
 
 void sc_vm_init(struct virtual_machine *vm)
 {
@@ -31,6 +41,19 @@ void sc_vm_init(struct virtual_machine *vm)
 static u32 vm_fetch_instr(struct virtual_machine *vm)
 {
 	return vm->bytecode[vm->pc++];
+}
+
+static void vm_reset_status(struct virtual_machine *vm)
+{
+	vm->status = 0;
+}
+
+static void vm_set_flag(struct virtual_machine *vm, u32 flag, u32 val)
+{
+	if (val)
+		vm->status |= 1 << flag;
+	else
+		vm->status &= (~(1 << flag));
 }
 
 static void vm_set_slot(struct virtual_machine *vm, u32 slot_id, u32 val)
@@ -114,7 +137,16 @@ static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 			printf("mov %u, %u\n", dst_slot, src_slot);
 		} else if (MOV_SLOT_IMM32 == mod) {
 			imm32 = vm_fetch_instr(vm);
-			printf("movk %u, %" PRIu32 "\n", dst_slot, imm32);
+			printf("movi %u, %" PRIu32 "\n", dst_slot, imm32);
+		}
+		break;
+
+	case CMP:
+		if (MOV_SLOT_SLOT == mod) {
+			printf("cmp %u, %u\n", dst_slot, src_slot);
+		} else if (MOV_SLOT_IMM32 == mod) {
+			imm32 = vm_fetch_instr(vm);
+			printf("cpi %u, %" PRIu32 "\n", dst_slot, imm32);
 		}
 		break;
 	case JMP:
@@ -139,5 +171,4 @@ void sc_vm_dump_bytecode(struct compiler_state *cs)
 
 	while (!vm_print_instr_info(cs->vm, cs->vm->bytecode[cs->vm->pc++]))
 		;
-	printf("pc = %" PRIu64 "\n", cs->vm->pc);
 }

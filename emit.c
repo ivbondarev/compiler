@@ -30,6 +30,28 @@ static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
 	emit_instr(vm, imm32);
 }
 
+static void emit_cmp(struct virtual_machine *vm, u8 mod, u8 op1, u8 op2,
+		     u32 imm32)
+{
+	u32 instr = 0;
+
+	instr |= CMP << 24 | mod << 22;
+	switch (mod) {
+	case MOV_SLOT_SLOT:
+		instr |= ((op1 & 0x3F) << 16) | op2 << 8;
+		break;
+	case MOV_SLOT_IMM32:
+		instr |= (op1 & 0x3F) << 16;
+		break;
+	default:
+		break;
+	}
+
+	emit_instr(vm, instr);
+	if (MOV_SLOT_IMM32 == mod)
+		emit_instr(vm, imm32);
+}
+
 static void emit_jmp(struct virtual_machine *vm, u32 imm32)
 {
 	u32 instr = 0;
@@ -69,6 +91,17 @@ void sc_emit_tac(struct compiler_state *cs)
 					 op2->global_id, 0);
 			else
 				emit_mov(cs->vm, MOV_SLOT_IMM32, op1->global_id,
+					 0, op2->val);
+			total++;
+			break;
+		case IR_INSTR_CMP:
+			op1 = ir_ins->op1;
+			op2 = ir_ins->op2;
+			if (IR_OBJ_VAR == op2->type)
+				emit_cmp(cs->vm, MOV_SLOT_SLOT, op1->global_id,
+					 op2->global_id, 0);
+			else
+				emit_cmp(cs->vm, MOV_SLOT_IMM32, op1->global_id,
 					 0, op2->val);
 			total++;
 			break;
