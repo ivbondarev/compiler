@@ -6,6 +6,8 @@
 #include "lexer.h"
 #include "ir.h"
 
+#define EMIT_LONG_OP2(ins, op2) ((ins) |= op2 & 0xFFFF)
+
 static void emit_instr(struct virtual_machine *vm, u32 instr)
 {
 	vm->bytecode[vm->pc++] = instr;
@@ -15,6 +17,7 @@ static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
 		     u32 imm32)
 {
 	u32 instr = 0;
+	u16 imm = imm32 & 0xFFFF;
 
 	instr |= MOV << 24;
 	instr |= mod << 22;
@@ -26,14 +29,23 @@ static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
 		return;
 	}
 
+	EMIT_LONG_OP2(instr, imm);
 	emit_instr(vm, instr);
-	emit_instr(vm, imm32);
+}
+
+static void emit_jne(struct virtual_machine *vm, u16 imm16)
+{
+	u32 instr = JNE << 24;
+
+	EMIT_LONG_OP2(instr, imm16 & 0xFFFF);
+	emit_instr(vm, instr);
 }
 
 static void emit_cmp(struct virtual_machine *vm, u8 mod, u8 op1, u8 op2,
 		     u32 imm32)
 {
 	u32 instr = 0;
+	u16 imm;
 
 	instr |= CMP << 24 | mod << 22;
 	switch (mod) {
@@ -41,15 +53,15 @@ static void emit_cmp(struct virtual_machine *vm, u8 mod, u8 op1, u8 op2,
 		instr |= ((op1 & 0x3F) << 16) | op2 << 8;
 		break;
 	case MOV_SLOT_IMM32:
-		instr |= (op1 & 0x3F) << 16;
+		instr |= ((op1 & 0x3F) << 16);
+		imm = imm32 & 0xFFFF;
+		EMIT_LONG_OP2(instr, imm);
 		break;
 	default:
 		break;
 	}
 
 	emit_instr(vm, instr);
-	if (MOV_SLOT_IMM32 == mod)
-		emit_instr(vm, imm32);
 }
 
 static void emit_jmp(struct virtual_machine *vm, u32 imm32)
@@ -57,8 +69,8 @@ static void emit_jmp(struct virtual_machine *vm, u32 imm32)
 	u32 instr = 0;
 
 	instr |= JMP << 24;
+	EMIT_LONG_OP2(instr, imm32 & 0xFFFF);
 	emit_instr(vm, instr);
-	emit_instr(vm, imm32);
 }
 
 static void emit_hlt(struct virtual_machine *vm)
@@ -103,6 +115,10 @@ void sc_emit_tac(struct compiler_state *cs)
 			else
 				emit_cmp(cs->vm, MOV_SLOT_IMM32, op1->global_id,
 					 0, op2->val);
+			total++;
+			break;
+		case IR_INSTR_JNE:
+			emit_jne(cs->vm, ir_ins->go_to);
 			total++;
 			break;
 		default:

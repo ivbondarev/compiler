@@ -8,6 +8,7 @@ enum instructions {
 	HLT,
 	JMP,
 	CMP,
+	JNE,
 	I__MAX
 };
 

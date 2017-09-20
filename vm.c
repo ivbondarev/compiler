@@ -136,7 +136,7 @@ static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 		if (MOV_SLOT_SLOT == mod) {
 			printf("mov %u, %u\n", dst_slot, src_slot);
 		} else if (MOV_SLOT_IMM32 == mod) {
-			imm32 = vm_fetch_instr(vm);
+			imm32 = instr & 0xFFFF;
 			printf("movi %u, %" PRIu32 "\n", dst_slot, imm32);
 		}
 		break;
@@ -145,17 +145,20 @@ static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 		if (MOV_SLOT_SLOT == mod) {
 			printf("cmp %u, %u\n", dst_slot, src_slot);
 		} else if (MOV_SLOT_IMM32 == mod) {
-			imm32 = vm_fetch_instr(vm);
+			imm32 = instr & 0xFFFF;
 			printf("cpi %u, %" PRIu32 "\n", dst_slot, imm32);
 		}
 		break;
 	case JMP:
-		imm32 = vm_fetch_instr(vm);
+		imm32 = instr & 0xFFFF;
 		printf("jmp %" PRIi32 "\n", (i32)imm32);
 		break;
 	case HLT:
 		printf("hlt\n");
 		return 1;
+		break;
+	case JNE:
+		printf("jne %d\n", (i16)(instr & 0xFFFF));
 		break;
 	default:
 		printf("Wrong OP: %u, pc = %" PRIu64 "\n", op, vm->pc);

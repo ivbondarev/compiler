@@ -172,6 +172,7 @@ void ir_gen(struct ir_state *irs, struct node *ast_node)
 	if (N_IF == ast_node->base_tok->type) {
 		struct ir_instr *ins_jne = ir_newins();
 		struct ir_instr *ins_jmp = ir_newins();
+		i32 rel_jump;
 
 		ins_jne->type = IR_INSTR_JNE;
 		ins_jmp->type = IR_INSTR_JMP;
@@ -180,14 +181,16 @@ void ir_gen(struct ir_state *irs, struct node *ast_node)
 		ir_gen(irs, ast_node->nodes.elems[0]);
 		/* Avoid true condition */
 		sc_vector_add(&irs->tac, ins_jne);
+		rel_jump = (i32)irs->tac.size;
 		/* True */
 		ir_gen(irs, ast_node->nodes.elems[1]);
 		/* Avoid else condition */
 		sc_vector_add(&irs->tac, ins_jmp);
-		ins_jne->go_to = (i32)irs->tac.size;
+		ins_jne->go_to = (i32)(irs->tac.size - rel_jump);
 		/* False */
+		rel_jump = (i32)irs->tac.size;
 		ir_gen(irs, ast_node->nodes.elems[2]);
-		ins_jmp->go_to = (i32)irs->tac.size;
+		ins_jmp->go_to = (i32)(irs->tac.size - rel_jump);
 		return;
 	}
 
