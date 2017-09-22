@@ -31,9 +31,17 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 		tok = cs->tokens.elems[*tok_id];
 
 		if (tok->type == ID) {
-			/* ASSIGN */
-			nn = sc_tree_add_node(n, sc_lexer_tok(N_ASSIGN));
-			parser_prod(cs, tok_id, N_ASSIGN, nn);
+			struct token *next_tok = cs->tokens.elems[*tok_id + 1];
+
+			if (next_tok->type == LPAR) {
+				/* FUNCCALL */
+				nn = sc_tree_add_node(n, sc_lexer_tok(N_FUNCCALL));
+				parser_prod(cs, tok_id, N_FUNCCALL, nn);
+			} else {
+				/* ASSIGN */
+				nn = sc_tree_add_node(n, sc_lexer_tok(N_ASSIGN));
+				parser_prod(cs, tok_id, N_ASSIGN, nn);
+			}
 		} else if (tok->type == IF) {
 			/* IF block */
 			nn = sc_tree_add_node(n, sc_lexer_tok(N_IF));
@@ -46,6 +54,22 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 		}
 
 		parser_prod(cs, tok_id, N_STATEMENT, n);
+		break;
+	case N_FUNCCALL:
+		tok = cs->tokens.elems[*tok_id];
+		/* FUNC ID */
+		parser_match(cs, tok_id, ID);
+		sc_tree_add_node(n, tok);
+		/* ( */
+		parser_match(cs, tok_id, LPAR);
+		tok = cs->tokens.elems[*tok_id];
+		sc_tree_add_node(n, sc_lexer_tok(LPAR));
+		/* var */
+		parser_match(cs, tok_id, ID);
+		sc_tree_add_node(n, tok);
+		/* ) */
+		parser_match(cs, tok_id, RPAR);
+		sc_tree_add_node(n, sc_lexer_tok(RPAR));
 		break;
 	case N_ASSIGN:
 		tok = cs->tokens.elems[*tok_id];

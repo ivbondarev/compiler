@@ -13,6 +13,24 @@ static void emit_instr(struct virtual_machine *vm, u32 instr)
 	vm->bytecode[vm->pc++] = instr;
 }
 
+static void emit_push(struct virtual_machine *vm, u16 var_stack_id)
+{
+	u32 instr = PUSH << 24;
+
+	instr |= (var_stack_id & 0xFFFF);
+	emit_instr(vm, instr);
+}
+
+static void emit_call(struct virtual_machine *vm, u8 global_func_id, u16 var_id)
+{
+	u32 instr = CALL << 24;
+
+	instr |= (global_func_id & 0xFFFF);
+
+	emit_push(vm, var_id);
+	emit_instr(vm, instr);
+}
+
 static void emit_mov(struct virtual_machine *vm, u8 mod, u8 dst, u8 src,
 		     u32 imm32)
 {
@@ -119,6 +137,14 @@ void sc_emit_tac(struct compiler_state *cs)
 			break;
 		case IR_INSTR_JNE:
 			emit_jne(cs->vm, ir_ins->go_to);
+			total++;
+			break;
+		case IR_INSTR_CALL:
+			/* Func */
+			op1 = ir_ins->result;
+			/* Var */
+			op2 = ir_ins->op1;
+			emit_call(cs->vm, op1->global_id, op2->global_id);
 			total++;
 			break;
 		default:

@@ -349,6 +349,8 @@ char *sc_lexer_token_info(const struct token *tok)
 		return "N_STATEMENT";
 	case N_COND:
 		return "N_COND";
+	case N_FUNCCALL:
+		return "N_FUNCCALL";
 	case NUM:
 		sprintf(buf, "%u", tok->val);
 		return buf;

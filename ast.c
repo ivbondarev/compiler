@@ -18,6 +18,11 @@ void sc_ast_transform(struct node *n)
 		sc_vector_remove_elem(&n->nodes, 3);
 	}
 
+	if (N_FUNCCALL == n->base_tok->type) {
+		sc_vector_remove_elem(&n->nodes, 1);
+		sc_vector_remove_elem(&n->nodes, 2);
+	}
+
 	for (size_t i = 0; i < n->nodes.size; i++)
 		sc_ast_transform(n->nodes.elems[i]);
 

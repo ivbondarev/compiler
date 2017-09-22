@@ -31,11 +31,30 @@ enum {
 	FLG_CARRY
 };
 
+static void g_func_print(u64 val)
+{
+	printf("%" PRIu64 "\n", val);
+}
+
+static void add_global_func(struct virtual_machine *vm, const char *name,
+			    size_t nargs, void *clbck)
+{
+	struct vm_func *func = calloc(1, sizeof(*func));
+
+	func->name = name;
+	func->nargs = nargs;
+	func->callback = clbck;
+	sc_vector_add(&vm->global_funcs, func);
+}
+
 void sc_vm_init(struct virtual_machine *vm)
 {
 	memset(vm, 0, sizeof(*vm));
 	vm->stack = calloc(1, VM_STACK_SIZE * sizeof(*vm->stack));
 	vm->bytecode = calloc(1, VM_INSTRUCTIONS_SIZE * sizeof(*vm->bytecode));
+
+	/* Global functions */
+	add_global_func(vm, "print", 1, g_func_print);
 }
 
 static u32 vm_fetch_instr(struct virtual_machine *vm)
@@ -159,6 +178,12 @@ static int vm_print_instr_info(struct virtual_machine *vm, u32 instr)
 		break;
 	case JNE:
 		printf("jne %d\n", (i16)(instr & 0xFFFF));
+		break;
+	case PUSH:
+		printf("push %d\n", (i16)(instr & 0xFFFF));
+		break;
+	case CALL:
+		printf("call %d\n", (u16)(instr & 0xFFFF));
 		break;
 	default:
 		printf("Wrong OP: %u, pc = %" PRIu64 "\n", op, vm->pc);

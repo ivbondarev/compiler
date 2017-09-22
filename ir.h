@@ -9,12 +9,16 @@ enum {
 	IR_INSTR_CMP, /* a == b */
 	IR_INSTR_JMP, /* jmp xxx */
 	IR_INSTR_JNE, /* jne xxx */
+	IR_INSTR_PUSH, /* push slot1 */
+	IR_INSTR_POP, /* pop */
+	IR_INSTR_CALL, /* print(var1) */
 	IR_INSTR_HLT
 };
 
 enum {
 	IR_OBJ_VAR,
-	IR_OBJ_NUM
+	IR_OBJ_NUM,
+	IR_OBJ_FUNC
 };
 
 struct ir_obj {
@@ -39,8 +43,8 @@ struct ir_state {
 /* Base initialization */
 void sc_ir_init(struct ir_state *irs);
 /* Generate IR */
-void sc_ir_make(struct ir_state *irs, struct node *ast_node);
+void sc_ir_make(struct compiler_state *cs, struct node *ast_node);
 /* Print TAC */
-void sc_ir_print_tac(const struct ir_state *irs);
+void sc_ir_print_tac(struct virtual_machine *vm, const struct ir_state *irs);
 
 #endif /* !_IR_H_ */

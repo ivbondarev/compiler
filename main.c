@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
 	/* Dump AST */
 	sc_tree_dump(cs.parse_tree);
 	/* Generate IR */
-	sc_ir_make(cs.irs, cs.parse_tree);
+	sc_ir_make(&cs, cs.parse_tree);
 	/* Dump IR to stdout */
-	sc_ir_print_tac(cs.irs);
+	sc_ir_print_tac(cs.vm, cs.irs);
 	/* Transform IR to bytecode */
 	sc_emit_tac(&cs);
 	/* Show bytecode*/
