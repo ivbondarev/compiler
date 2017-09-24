@@ -17,6 +17,8 @@ enum instructions {
 #define MOV_SLOT_SLOT 0
 #define MOV_SLOT_IMM32 1
 
+#define OP(x) (x >> 24) & 0xFF
+
 struct vm_func {
 	void *callback;
 	size_t nargs;

@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "lexer.h"
 #include "ir.h"
+#include "bytecode.h"
 
 #define EMIT_LONG_OP2(ins, op2) ((ins) |= op2 & 0xFFFF)
 
@@ -15,18 +16,22 @@ static void emit_instr(struct virtual_machine *vm, u32 instr)
 
 static void emit_push(struct virtual_machine *vm, u16 var_stack_id)
 {
-	u32 instr = PUSH << 24;
+	u32 instr = 0;
 
-	instr |= (var_stack_id & 0xFFFF);
+	/* Opcode is PUSH */
+	SET_OP(instr, PUSH);
+	/* IMM16 is stack slot id relative to base */
+	SET_IMM16(instr, var_stack_id);
+
 	emit_instr(vm, instr);
 }
 
 static void emit_call(struct virtual_machine *vm, u8 global_func_id, u16 var_id)
 {
-	u32 instr = CALL << 24;
+	u32 instr = 0;
 
-	instr |= (global_func_id & 0xFFFF);
-
+	SET_OP(instr, CALL);
+	SET_IMM16(instr, global_func_id);
 	emit_push(vm, var_id);
 	emit_instr(vm, instr);
 }
