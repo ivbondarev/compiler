@@ -3,7 +3,7 @@
 #include "emit.h"
 #include "vm.h"
 #include "utils.h"
-#include "lexer.h"
+#include "front/lex.h"
 #include "ir.h"
 #include "bytecode.h"
 

@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "front/lex.h"
 #include "parser.h"
 #include "main.h"
 #include "utils.h"

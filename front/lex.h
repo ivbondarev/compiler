@@ -1,7 +1,7 @@
 #ifndef _LEXER_H
 #define _LEXER_H
 
-#include "main.h"
+#include "../main.h"
 
 /*
  * PROG -> STATEMENT

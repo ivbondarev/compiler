@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lexer.h"
+#include "front/lex.h"
 #include "utils.h"
 #include "state.h"
 #include "postfix.h"

@@ -2,7 +2,7 @@
 
 #include "ir.h"
 #include "tree.h"
-#include "lexer.h"
+#include "front/lex.h"
 #include "vm.h"
 #include "utils.h"
 

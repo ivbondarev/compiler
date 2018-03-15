@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "lexer.h"
-#include "utils.h"
+#include "lex.h"
+#include "../utils.h"
 
 #define DELIMETER " "
 

@@ -1,6 +1,6 @@
 #include "main.h"
 #include "vector.h"
-#include "lexer.h"
+#include "front/lex.h"
 #include "emit.h"
 #include "vm.h"
 /*

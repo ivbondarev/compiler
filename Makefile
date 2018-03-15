@@ -1,3 +1,4 @@
 all:
-	gcc main.c lexer.c utils.c vector.c state.c vm.c postfix.c \
-	emit.c ir.c parser.c tree.c ast.c bytecode.c -O0 -g -o compiler -Wall
+	gcc main.c front/lex.c utils.c vector.c state.c vm.c postfix.c \
+	emit.c ir.c parser.c tree.c ast.c bytecode.c \
+	-O0 -g -o compiler -Wall

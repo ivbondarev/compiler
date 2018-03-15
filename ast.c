@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "front/lex.h"
 #include "tree.h"
 
 void sc_ast_transform(struct node *n)
