@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-#include "vector.h"
+#include "misc/vector.h"
 
 struct node;
 struct virtual_machine;

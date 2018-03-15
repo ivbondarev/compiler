@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "utils.h"
-#include "vector.h"
+#include "misc/vector.h"
 #include "vm.h"
 #include "tree.h"
 #include "front/lex.h"

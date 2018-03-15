@@ -1,5 +1,5 @@
 #include "main.h"
-#include "vector.h"
+#include "misc/vector.h"
 #include "front/lex.h"
 #include "emit.h"
 #include "vm.h"

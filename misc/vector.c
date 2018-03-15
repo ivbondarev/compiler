@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "vector.h"
-#include "utils.h"
+#include "../utils.h"
 
 #define DEFAULT_ELEMS_NUM 2
 
