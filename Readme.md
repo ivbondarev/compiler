@@ -38,9 +38,11 @@ Parse tree:
 ![Parse tree:](https://i.imgur.com/WSoesKC.jpg)
 
 TODO:
-lexer+
-parse tree+
-vm+-
-ast-
-tac-
-ssa-
+update grammar
+rewrite lexer
+rewrite parse tree
+write vm: +-
+ast: -
+tac: -
+ssa: -
+tac to bc: -
