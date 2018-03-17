@@ -3,13 +3,15 @@
 
 void sc_ast_transform(struct node *n)
 {
-	if (N_ASSIGN == n->base_tok->type) {
-		n->base_tok->type = ASSIGN;
+	struct token *tok = (struct token *)n->data;
+
+	if (N_ASSIGN == tok->type) {
+		tok->type = ASSIGN;
 		sc_vector_remove_elem(&n->nodes, 1);
 		return;
 	}
 
-	if (N_IF == n->base_tok->type) {
+	if (N_IF == tok->type) {
 		sc_vector_remove_elem(&n->nodes, 0);
 		sc_vector_remove_elem(&n->nodes, 0);
 		sc_vector_remove_elem(&n->nodes, 1);
@@ -18,12 +20,11 @@ void sc_ast_transform(struct node *n)
 		sc_vector_remove_elem(&n->nodes, 3);
 	}
 
-	if (N_FUNCCALL == n->base_tok->type) {
+	if (N_FUNCCALL == tok->type) {
 		sc_vector_remove_elem(&n->nodes, 1);
 		sc_vector_remove_elem(&n->nodes, 2);
 	}
 
 	for (size_t i = 0; i < n->nodes.size; i++)
 		sc_ast_transform(n->nodes.elems[i]);
-
 }

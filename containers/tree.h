@@ -4,13 +4,14 @@
 #include "../main.h"
 
 struct node {
-	struct vector nodes;
-	struct node *parent;
-	struct token *base_tok;
+	struct vector nodes; /* Child nodes */
+	struct node *parent; /* Parent node */
+	void *data; /* Pointer to data */
 };
 
-void sc_tree_init(struct node *t, struct token *base_tok);
-void sc_tree_dump(struct node *root);
-struct node *sc_tree_add_node(struct node *n, struct token *tok);
+/* Initialize tree structure */
+void sc_tree_init(struct node *t, void *data);
+/* Add sub-node to current node */
+struct node *sc_tree_add_node(struct node *parent, void *data);
 
 #endif /* !_TREE_H_ */

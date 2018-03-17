@@ -21,12 +21,10 @@ int main(int argc, char *argv[])
 	sc_lexer_tokenize(&cs);
 	/* Parse LL(k) grammar */
 	sc_parser_begin(&cs);
-	/* Dump parse tree to graphviz foramt */
-	sc_tree_dump(cs.parse_tree);
 	/* Transfrom derivation tree to AST */
 	sc_ast_transform(cs.parse_tree);
 	/* Dump AST */
-	sc_tree_dump(cs.parse_tree);
+	//sc_parser_dump(cs.parse_tree);
 	/* Generate IR */
 	sc_ir_make(&cs, cs.parse_tree);
 	/* Dump IR to stdout */

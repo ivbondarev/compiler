@@ -144,17 +144,18 @@ static struct token *node_tok(struct node *n, size_t i)
 {
 	struct node *ni = n->nodes.elems[i];
 
-	return ni->base_tok;
+	return (struct token *)ni->data;
 }
 
 void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 	    struct node *ast_node)
 {
-	if (N_FUNCCALL == ast_node->base_tok->type) {
+	struct token *tok = (struct token *)ast_node->data;
+	if (N_FUNCCALL == tok->type) {
 		struct node *n1 = ast_node->nodes.elems[0];
 		struct node *n2 = ast_node->nodes.elems[1];
-		struct token *func_name = n1->base_tok;
-		struct token *var_name = n2->base_tok;
+		struct token *func_name = (struct token *)n1->data;
+		struct token *var_name = (struct token *)n2->data;
 		struct ir_obj *func = ir_newobj();
 		struct ir_obj *var = ir_newobj();
 		struct ir_instr *ins = ir_newins();
@@ -173,12 +174,12 @@ void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 		return;
 	}
 
-	if (ASSIGN == ast_node->base_tok->type) {
+	if (ASSIGN == tok->type) {
 		struct node *n1 = ast_node->nodes.elems[0];
 		struct node *n2 = ast_node->nodes.elems[1];
 		
-		struct token *lhs_tok = n1->base_tok;
-		struct token *rhs_tok = n2->base_tok;
+		struct token *lhs_tok = (struct token *)n1->data;
+		struct token *rhs_tok = (struct token *)n2->data;
 		struct ir_obj *lhs = ir_newobj();
 		struct ir_obj *rhs = ir_newobj();
 		struct ir_instr *ins = ir_newins();
@@ -203,7 +204,7 @@ void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 		return;
 	}
 
-	if (N_COND == ast_node->base_tok->type) {
+	if (N_COND == tok->type) {
 		/* Tokens */
 		struct token *tok1 = node_tok(ast_node, 0);
 		struct token *tok3 = node_tok(ast_node, 2);
@@ -228,7 +229,7 @@ void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 		return;
 	}
 
-	if (N_IF == ast_node->base_tok->type) {
+	if (N_IF == tok->type) {
 		struct ir_instr *ins_jne = ir_newins();
 		struct ir_instr *ins_jmp = ir_newins();
 		i32 rel_jump;

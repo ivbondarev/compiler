@@ -142,13 +142,42 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 	}
 }
 
+static void parser_node_info(FILE *fp, struct node *n)
+{
+	char *tok_info;
+	struct token *tok;
+
+	for (size_t i = 0; i < n->nodes.size; i++)
+		parser_node_info(fp, n->nodes.elems[i]);
+
+	tok = (struct token *)n->data;
+	tok_info = sc_lexer_token_info(tok);
+
+	if (NULL != n->parent)
+		fprintf(fp, "\t\"%p\" -> \"%p\";\n", n->parent, n);
+
+	fprintf(fp, "\t\"%p\" [label=\"%s\"]\n", n, tok_info);
+
+	if (tok->type == NUM)
+		free(tok_info);
+}
+
+void sc_parser_dump(FILE *fp, struct node *root)
+{
+	fprintf(fp, "digraph G {\n");
+	parser_node_info(fp, root);
+	fprintf(fp, "}");
+	fclose(fp);
+}
+
 void sc_parser_begin(struct compiler_state *cs)
 {
-	/* Now it's not LL1 :) */
 	size_t tok_id = 0;
 
 	parser_prod(cs, &tok_id, N_PROG, cs->parse_tree);
-	printf("Correct, read %lu tokens of %lu\n",
-	       tok_id, cs->tokens.size);
-}
 
+	if (tok_id != cs->tokens.size)
+		sc_utils_die("Wrong number of token parser");
+	if (cs->dump.parse_tree != NULL)
+		sc_parser_dump(cs->dump.parse_tree, cs->parse_tree);
+}
