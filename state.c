@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <getopt.h>
 
 #include "main.h"
 #include "utils.h"
@@ -32,11 +34,35 @@ static void state_read_file(struct compiler_state *cs, const char *path)
 
 void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 {
-	if (2 != argc)
-		sc_utils_die("Bad number of args");
+	char *file = NULL;
+	char *parse_tree_dump = NULL;
+	int c;
+	struct option longopts[] = {
+		{ "parsetree", required_argument, NULL, 'p' },
+		{ "file", required_argument, NULL, 'f' },
+		{ 0, 0, 0, 0 }
+	};
+
+	while ((c = getopt_long(argc, argv, ":f:p:", longopts, NULL)) != -1) {
+		switch (c) {
+		case 'f':
+			file = optarg;
+			break;
+		case 'p':
+			parse_tree_dump = optarg;
+			break;
+		case 0:
+			break;
+		default:
+			sc_utils_die("Wrong argument");
+		}
+	}
+
+	if (file == NULL)
+		sc_utils_die("Please define program");
 
 	memset(cs, 0, sizeof(*cs));
-	state_read_file(cs, argv[1]);
+	state_read_file(cs, file);
 
 	sc_vector_init(&cs->tokens);
 
