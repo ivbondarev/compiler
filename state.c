@@ -36,20 +36,25 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 {
 	char *file = NULL;
 	char *parse_tree_dump = NULL;
+	char *tokens_dump = NULL;
 	int c;
 	struct option longopts[] = {
 		{ "parsetree", required_argument, NULL, 'p' },
 		{ "file", required_argument, NULL, 'f' },
+		{ "tokens", required_argument, NULL, 't' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while ((c = getopt_long(argc, argv, ":f:p:", longopts, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, ":f:p:t:", longopts, NULL)) != -1) {
 		switch (c) {
 		case 'f':
 			file = optarg;
 			break;
 		case 'p':
 			parse_tree_dump = optarg;
+			break;
+		case 't':
+			tokens_dump = optarg;
 			break;
 		case 0:
 			break;
@@ -58,10 +63,11 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 		}
 	}
 
-	if (file == NULL)
-		sc_utils_die("Please define program");
-
 	memset(cs, 0, sizeof(*cs));
+
+	cs->dump.tokens = fopen(tokens_dump, "w+");
+	cs->dump.parse_tree = fopen(parse_tree_dump, "w+");
+
 	state_read_file(cs, file);
 
 	sc_vector_init(&cs->tokens);
@@ -78,4 +84,3 @@ void sc_state_destroy(const struct compiler_state *cs)
 {
 	/* todo */
 }
-

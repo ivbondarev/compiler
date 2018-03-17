@@ -20,6 +20,13 @@ typedef int64_t i64;
 typedef uint8_t u8;
 typedef int8_t i8;
 
+struct dumper {
+	FILE *bc;
+	FILE *tokens;
+	FILE *parse_tree;
+	FILE *ast;
+};
+
 struct compiler_state {
 	char *buf;
 	size_t size;
@@ -27,6 +34,7 @@ struct compiler_state {
 	struct virtual_machine *vm;
 	struct node *parse_tree;
 	struct ir_state *irs;
+	struct dumper dump;
 };
 
 #endif /* !_MAIN_H */

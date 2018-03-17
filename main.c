@@ -17,12 +17,8 @@ int main(int argc, char *argv[])
 {
 	struct compiler_state cs;
 
-	/* Initialize compiler state */
 	sc_state_init(&cs, argc, argv);
-	/* Convert input stream into tokens */
 	sc_lexer_tokenize(&cs);
-	/* Print tokens */
-	//sc_lexer_print_tokens(&cs);
 	/* Parse LL(k) grammar */
 	sc_parser_begin(&cs);
 	/* Dump parse tree to graphviz foramt */

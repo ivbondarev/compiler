@@ -63,6 +63,5 @@ void sc_lexer_token_chain(const struct compiler_state *cs);
 void sc_lexer_token_chain_vector(const struct vector *v);
 struct token *sc_lexer_tok(u32 type);
 char *sc_lexer_token_info(const struct token *tok);
-void sc_lexer_print_tokens(const struct compiler_state *cs);
 
 #endif /* !_LEXER_H */

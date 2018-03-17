@@ -216,6 +216,74 @@ static size_t lexer_read_div(struct compiler_state *cs)
 	return 1;
 }
 
+void lexer_print_tokens(const struct compiler_state *cs)
+{
+	FILE *f = cs->dump.tokens;
+
+	for (size_t i = 0; i < cs->tokens.size; i++) {
+		const struct token *tok = cs->tokens.elems[i];
+
+		switch(tok->type) {
+		case ASSIGN:
+			fprintf(f, "%s", "['=']");
+			break;
+		case IF:
+			fprintf(f, "%s", "[IF]");
+			break;
+		case LBRA:
+			fprintf(f, "%s", "['{']");
+			break;
+		case RBRA:
+			fprintf(f, "%s", "['}']");
+			break;
+		case EQ:
+			fprintf(f, "%s", "['==']");
+			break;
+		case ID:
+			fprintf(f, "[ID : %s]", tok->str);
+			break;
+		case PLUS:
+			fprintf(f, "%s", "[+]");
+			break;
+		case MINUS:
+			fprintf(f, "%s", "[-]");
+			break;
+		case DIV:
+			fprintf(f, "%s", "[/]");
+			break;
+		case MUL:
+			fprintf(f, "%s", "[*]");
+			break;
+		case LPAR:
+			fprintf(f, "%s", "[(]");
+			break;
+		case RPAR:
+			fprintf(f, "%s", "[)]");
+			break;
+		case NUM:
+			fprintf(f, "[NUM : %u]", tok->val);
+			break;
+		case END:
+			fprintf(f, "%s", "[END]");
+			break;
+		case THEN:
+			fprintf(f, "%s", "[THEN]");
+			break;
+		case ELSE:
+			fprintf(f, "%s", "[ELSE]");
+			break;
+		case EOS:
+			fprintf(f, "%s", "[EOS]");
+			break;
+		default:
+			sc_utils_die("Ivalid token type");
+		}
+	}
+
+	fprintf(f, "\n");
+	fclose(f);
+}
+
 static void lexer_get_tokens(struct compiler_state *cs, const char *str)
 {
 	size_t i = 0;
@@ -266,72 +334,11 @@ void sc_lexer_tokenize(struct compiler_state *cs)
 
 	tok->type = EOS;
 	add_tok(cs, tok);
+
+	if (cs->dump.tokens != NULL)
+		lexer_print_tokens(cs);
 }
 
-void sc_lexer_print_tokens(const struct compiler_state *cs)
-{
-	for (size_t i = 0; i < cs->tokens.size; i++) {
-		const struct token *tok = cs->tokens.elems[i];
-
-		switch(tok->type) {
-		case ASSIGN:
-			printf("%s", "['=']");
-			break;
-		case IF:
-			printf("%s", "[IF]");
-			break;
-		case LBRA:
-			printf("%s", "['{']");
-			break;
-		case RBRA:
-			printf("%s", "['}']");
-			break;
-		case EQ:
-			printf("%s", "['==']");
-			break;
-		case ID:
-			printf("[ID : %s]", tok->str);
-			break;
-		case PLUS:
-			printf("%s", "[+]");
-			break;
-		case MINUS:
-			printf("%s", "[-]");
-			break;
-		case DIV:
-			printf("%s", "[/]");
-			break;
-		case MUL:
-			printf("%s", "[*]");
-			break;
-		case LPAR:
-			printf("%s", "[(]");
-			break;
-		case RPAR:
-			printf("%s", "[)]");
-			break;
-		case NUM:
-			printf("[NUM : %u]", tok->val);
-			break;
-		case END:
-			printf("%s", "[END]");
-			break;
-		case THEN:
-			printf("%s", "[THEN]");
-			break;
-		case ELSE:
-			printf("%s", "[ELSE]");
-			break;
-		case EOS:
-			printf("%s", "[EOS]");
-			break;
-		default:
-			sc_utils_die("Ivalid token type");
-		}
-	}
-
-	printf("\n");
-}
 
 char *sc_lexer_token_info(const struct token *tok)
 {
