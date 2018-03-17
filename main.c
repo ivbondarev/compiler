@@ -3,12 +3,12 @@
 #include <string.h>
 
 #include "front/lex.h"
+#include "containers/tree.h"
 #include "utils.h"
 #include "state.h"
 #include "postfix.h"
 #include "vm.h"
 #include "parser.h"
-#include "tree.h"
 #include "ast.h"
 #include "ir.h"
 #include "emit.h"

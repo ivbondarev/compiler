@@ -1,8 +1,8 @@
 #include <string.h>
 
-#include "ir.h"
-#include "tree.h"
+#include "containers/tree.h"
 #include "front/lex.h"
+#include "ir.h"
 #include "vm.h"
 #include "utils.h"
 

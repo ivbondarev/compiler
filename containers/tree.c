@@ -1,8 +1,8 @@
 #include <string.h>
 
 #include "tree.h"
-#include "front/lex.h"
-#include "utils.h"
+#include "../front/lex.h"
+#include "../utils.h"
 
 void sc_tree_init(struct node *n, struct token *base_tok)
 {

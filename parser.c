@@ -1,8 +1,8 @@
 #include "front/lex.h"
+#include "containers/tree.h"
 #include "parser.h"
 #include "main.h"
 #include "utils.h"
-#include "tree.h"
 
 static void parser_match(const struct compiler_state *cs, size_t *tok_id,
 			enum tokens expect_type)

@@ -1,5 +1,5 @@
 #include "front/lex.h"
-#include "tree.h"
+#include "containers/tree.h"
 
 void sc_ast_transform(struct node *n)
 {

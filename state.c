@@ -3,12 +3,12 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#include "containers/vector.h"
+#include "containers/tree.h"
+#include "front/lex.h"
 #include "main.h"
 #include "utils.h"
-#include "misc/vector.h"
 #include "vm.h"
-#include "tree.h"
-#include "front/lex.h"
 #include "ir.h"
 
 static void state_read_file(struct compiler_state *cs, const char *path)

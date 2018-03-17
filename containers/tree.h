@@ -1,7 +1,7 @@
 #ifndef _TREE_H_
 #define _TREE_H_
 
-#include "main.h"
+#include "../main.h"
 
 struct node {
 	struct vector nodes;
