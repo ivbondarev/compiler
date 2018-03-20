@@ -150,7 +150,7 @@ static struct token *node_tok(struct node *n, size_t i)
 void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 	    struct node *ast_node)
 {
-	struct token *tok = (struct token *)ast_node->data;
+	/*struct token *tok = (struct token *)ast_node->data;
 	if (N_FUNCCALL == tok->type) {
 		struct node *n1 = ast_node->nodes.elems[0];
 		struct node *n2 = ast_node->nodes.elems[1];
@@ -202,17 +202,17 @@ void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 
 		sc_vector_add(&irs->tac, ins);
 		return;
-	}
+	}*/
 
-	if (N_COND == tok->type) {
+	//if (N_COND == tok->type) {
 		/* Tokens */
-		struct token *tok1 = node_tok(ast_node, 0);
-		struct token *tok3 = node_tok(ast_node, 2);
+	//	struct token *tok1 = node_tok(ast_node, 0);
+//		struct token *tok3 = node_tok(ast_node, 2);
 		/* Left and rigth tokens */
-		struct ir_obj *obj1 = ir_newobj();
-		struct ir_obj *obj2 = ir_newobj();
+//		struct ir_obj *obj1 = ir_newobj();
+//		struct ir_obj *obj2 = ir_newobj();
 		/* IR nstruction */
-		struct ir_instr *ins = ir_newins();
+/*		struct ir_instr *ins = ir_newins();
 
 		ins->type = IR_INSTR_CMP;
 
@@ -226,36 +226,36 @@ void ir_gen(struct virtual_machine *vm, struct ir_state *irs,
 		ins->op2 = obj2;
 
 		sc_vector_add(&irs->tac, ins);
-		return;
-	}
+		return;*/
+//	}
 
-	if (N_IF == tok->type) {
+/*	if (N_IF == tok->type) {
 		struct ir_instr *ins_jne = ir_newins();
 		struct ir_instr *ins_jmp = ir_newins();
 		i32 rel_jump;
 
 		ins_jne->type = IR_INSTR_JNE;
-		ins_jmp->type = IR_INSTR_JMP;
+		ins_jmp->type = IR_INSTR_JMP;*/
 
 		/* Condition */
-		ir_gen(vm, irs, ast_node->nodes.elems[0]);
+	//	ir_gen(vm, irs, ast_node->nodes.elems[0]);
 		/* Avoid true condition */
-		sc_vector_add(&irs->tac, ins_jne);
-		rel_jump = (i32)irs->tac.size;
+		//sc_vector_add(&irs->tac, ins_jne);
+	//	rel_jump = (i32)irs->tac.size;
 		/* True */
-		ir_gen(vm, irs, ast_node->nodes.elems[1]);
+	//	ir_gen(vm, irs, ast_node->nodes.elems[1]);
 		/* Avoid else condition */
-		sc_vector_add(&irs->tac, ins_jmp);
-		ins_jne->go_to = (i32)(irs->tac.size - rel_jump);
+	//	sc_vector_add(&irs->tac, ins_jmp);
+	//	ins_jne->go_to = (i32)(irs->tac.size - rel_jump);
 		/* False */
-		rel_jump = (i32)irs->tac.size;
-		ir_gen(vm, irs, ast_node->nodes.elems[2]);
-		ins_jmp->go_to = (i32)(irs->tac.size - rel_jump);
-		return;
-	}
+		//rel_jump = (i32)irs->tac.size;
+	//	ir_gen(vm, irs, ast_node->nodes.elems[2]);
+	//	ins_jmp->go_to = (i32)(irs->tac.size - rel_jump);
+	//	return;
+	//}
 
-	for (size_t i = 0; i < ast_node->nodes.size; i++)
-		ir_gen(vm, irs, ast_node->nodes.elems[i]);
+	//for (size_t i = 0; i < ast_node->nodes.size; i++)
+	//	ir_gen(vm, irs, ast_node->nodes.elems[i]);
 }
 
 

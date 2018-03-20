@@ -14,7 +14,6 @@ static int in_alphabet(const char ch)
 	return isalpha(ch) || isdigit(ch);
 }
 
-
 static void lexer_add_tok(struct compiler_state *cs, struct token *tok)
 {
 	sc_vector_add(&cs->tokens, tok);
@@ -41,18 +40,16 @@ char *sc_lexer_token_info(const struct token *tok)
 	char *buf = calloc(1, BUFSIZ);
 
 	switch(tok->type) {
-	case N_PROG:
-		return "N_PROG";
-	case N_ASSIGN:
-		return "N_ASSIGN";
-	case N_IF:
-		return "N_IF";
-	case N_STATEMENT:
-		return "N_STATEMENT";
-	case N_COND:
-		return "N_COND";
-	case N_FUNCCALL:
-		return "N_FUNCCALL";
+	case STATEMENT:
+		return "STATEMENT";
+	case ASSIGNMENT:
+		return "ASSIGNMENT";
+	case IFBLOCK:
+		return "IFBLOCK";
+	case EXPRESSION:
+		return "EXPRESSION";
+	case WHILELOOP:
+		return "WHILELOOP";
 	case NUM:
 		sprintf(buf, "%u", tok->val);
 		return buf;
@@ -136,7 +133,7 @@ void lexer_print_tokens(const struct compiler_state *cs)
 			fprintf(f, "%s", "[)]");
 			break;
 		case NUM:
-			fprintf(f, "[NUM : %u]", tok->val);
+			fprintf(f, "[NUM : %s]", tok->str);
 			break;
 		case END:
 			fprintf(f, "%s", "[END]");
@@ -149,6 +146,8 @@ void lexer_print_tokens(const struct compiler_state *cs)
 			break;
 		case CMP:
 			fprintf(f, "%s", "[==]");
+			break;
+		case EOS:
 			break;
 		default:
 			assert(0);
@@ -230,6 +229,28 @@ static int lexer_get_token(struct compiler_state *cs, size_t pos,
 	return 0;
 }
 
+static void num_or_id(struct token *tok)
+{
+	for (size_t i = 0; i < strlen(tok->str); i++)
+		if (!isdigit(tok->str[i])) {
+			tok->type = ID;
+			return;
+		}
+	tok->type = NUM;
+	tok->val = atoi(tok->str);
+}
+
+/* Determines, is token string or number */
+static void lexer_correct_types(struct compiler_state *cs)
+{
+	for (size_t i = 0; i < sc_vector_size(&cs->tokens); i++) {
+		struct token *tok = sc_vector_get(&cs->tokens, i);
+
+		if (tok->type == ID)
+			num_or_id(tok);
+	}
+}
+
 void sc_lexer_read_tokens(struct compiler_state *cs)
 {
 	struct token *tok = NULL;
@@ -252,6 +273,13 @@ void sc_lexer_read_tokens(struct compiler_state *cs)
 			pos += tok_len;
 		}
 	}
+
+	/* Fake EOS (end of stream) token */
+	tok = malloc(sizeof(*tok));
+	tok->type = EOS;
+	lexer_add_tok(cs, tok);
+
+	lexer_correct_types(cs);
 
 	if (cs->dump.tokens != NULL)
 		lexer_print_tokens(cs);

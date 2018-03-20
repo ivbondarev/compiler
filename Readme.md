@@ -8,16 +8,18 @@ Arguments:
 Grammar:
 
 ```c
-PROG -> STATEMENT
-STATEMENT -> ASSIGN STATEMENT | IF STATEMENT | WHILE STATEMENT |
-	ASSIGN EOS | IF EOS| WHILE EOS
-ASSIGN -> ID = NUM | ID = ID
-IF -> if ( COND ) then STATEMENT else STATEMENT end
-WHILE -> while ( COND ) do STATEMENT end
-COND -> ID == ID | ID == NUM
-ID -> name1
-NUM -> num1
+STATEMENT -> ASSIGNMENT STATEMENT | IFBLOCK STATEMENT | WHILELOOP STATEMENT
+	| ASSIGNMENT | IFBLOCK | WHILELOOP
+ASSIGNMENT -> ID = EXPR
+EXPR = ID | NUM | ID + EXPR| ID - EXPR| ID * EXPR | ID / EXPR
+	| NUM + EXPR | NUM - EXPR | NUM * EXPR | NUM / EXPR
+IFBLOCK -> if (EXPR) then STATEMENT end
+	| if (EXPR) then STATEMENT else STATEMENT end
+WHILELOOP -> while (EXPR == EXPR) do STATEMENT end
+ID -> [a-Z] ID | [0-9] ID | [0-9] | [a-Z]
+NUM -> [0-9] NUM | [0-9]
 ```
+
 Possible program:
 ```c
 var1 = 3

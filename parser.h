@@ -3,7 +3,7 @@
 
 #include "main.h"
 
+/* Generate parse tree */
 void sc_parser_begin(struct compiler_state *cs);
-void sc_parser_dump(FILE *fp, struct node *root);
 
 #endif /* !_PARSER_H_ */

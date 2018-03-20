@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "vm.h"
 #include "ir.h"
+#include "parser.h"
 
 static void state_read_file(struct compiler_state *cs, const char *path)
 {
@@ -74,7 +75,7 @@ void sc_state_init(struct compiler_state *cs, int argc, char **argv)
 
 	cs->vm = malloc(sizeof(*cs->vm));
 	cs->parse_tree = malloc(sizeof(*cs->parse_tree));
-	sc_tree_init(cs->parse_tree, sc_lexer_tok(N_PROG));
+	sc_tree_init(cs->parse_tree, sc_lexer_tok(STATEMENT));
 	cs->irs = calloc(1, sizeof(*cs->irs));
 	sc_ir_init(cs->irs);
 	sc_vm_init(cs->vm);

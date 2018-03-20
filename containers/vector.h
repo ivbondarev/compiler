@@ -21,5 +21,6 @@ void sc_vector_free(const struct vector *v);
 /* Remove 1 element from vector */
 void sc_vector_remove_elem(struct vector *v, size_t i);
 void *sc_vector_get(const struct vector *v, size_t i);
+size_t sc_vector_size(const struct vector *v);
 
 #endif /* !_VECTOR_H */

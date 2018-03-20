@@ -38,6 +38,11 @@ void *sc_vector_get(const struct vector *v, size_t i)
 	return v->elems[i];
 }
 
+size_t sc_vector_size(const struct vector *v)
+{
+	return v->size;
+}
+
 void sc_vector_free(const struct vector *v)
 {
 	free(v->elems);

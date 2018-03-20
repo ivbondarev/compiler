@@ -18,15 +18,11 @@
 
 enum tokens {
 	/* Non-terminals */
-	N_PROG,
-	N_STATEMENT,
-	N_ASSIGN,
-	N_IF,
-	N_WHILE,
-	N_STNEXT,
-	N_COND,
-	N_FUNCCALL,
-
+	ASSIGNMENT,
+	EXPRESSION,
+	STATEMENT,
+	IFBLOCK,
+	WHILELOOP,
 	/* Terminals */
 	LBRA, /* { */
 	RBRA, /* } */
@@ -47,20 +43,21 @@ enum tokens {
 	MUL,
 	/* Fake token */
 	SPACE,
+	EOS,
 	TOK__MAX
 };
 
 struct token {
 	enum tokens type;
-	union {
-		u32 val;
-		char *str;
-	};
+	u32 val;
+	char *str;
 };
 
 /* Scan and evaluate input stream */
 void sc_lexer_read_tokens(struct compiler_state *cs);
-struct token *sc_lexer_tok(u32 type);
+/* Return info about given token */
 char *sc_lexer_token_info(const struct token *tok);
+/* Create token with given type */
+struct token *sc_lexer_tok(u32 type);
 
 #endif /* !_LEXER_H */

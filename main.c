@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
 
 	sc_state_init(&cs, argc, argv);
 	sc_lexer_read_tokens(&cs);
-	/* Parse LL(k) grammar */
-	//sc_parser_begin(&cs);
+	sc_parser_begin(&cs);
 	/* Transfrom derivation tree to AST */
 	//sc_ast_transform(cs.parse_tree);
 	/* Dump AST */
