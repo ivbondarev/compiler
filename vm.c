@@ -59,19 +59,6 @@ static u32 vm_fetch_instr(struct virtual_machine *vm)
 	return vm->bytecode[vm->pc++];
 }
 
-static void vm_reset_status(struct virtual_machine *vm)
-{
-	vm->status = 0;
-}
-
-static void vm_set_flag(struct virtual_machine *vm, u32 flag, u32 val)
-{
-	if (val)
-		vm->status |= 1 << flag;
-	else
-		vm->status &= (~(1 << flag));
-}
-
 static void *op_handler[I__MAX] = {
 	bcode_mov,
 	NULL,

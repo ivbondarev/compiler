@@ -46,9 +46,6 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 			/* IF block */
 			nn = sc_tree_add_node(n, sc_lexer_tok(N_IF));
 			parser_prod(cs, tok_id, N_IF, nn);
-		} else if (tok->type == EOS) {
-			(*tok_id)++;
-			return;
 		} else {
 			break;
 		}
@@ -134,8 +131,6 @@ static void parser_prod(struct compiler_state *cs, size_t *tok_id,
 			sc_utils_die("Wrong cond rule");
 		}
 		break;
-	case EOS:
-		return;
 	default:
 		sc_utils_die("Wrong grammar: %u", non_term);
 		break;

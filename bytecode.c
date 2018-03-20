@@ -61,7 +61,7 @@ int bcode_instr_info(struct virtual_machine *vm, u32 ins)
 		}
 		break;
 
-	case CMP:
+	case ICMP:
 		if (MOV_SLOT_SLOT == mod) {
 			printf("cmp %u, %u\n", dst_slot, src_slot);
 		} else if (MOV_SLOT_IMM32 == mod) {

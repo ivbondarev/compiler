@@ -7,7 +7,7 @@ enum instructions {
 	MOV,
 	HLT,
 	JMP,
-	CMP,
+	ICMP,
 	JNE,
 	CALL,
 	PUSH,

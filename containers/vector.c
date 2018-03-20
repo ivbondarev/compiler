@@ -33,6 +33,11 @@ void *sc_vector_add(struct vector *v, void *elem)
 	return v->elems[v->size - 1];
 }
 
+void *sc_vector_get(const struct vector *v, size_t i)
+{
+	return v->elems[i];
+}
+
 void sc_vector_free(const struct vector *v)
 {
 	free(v->elems);

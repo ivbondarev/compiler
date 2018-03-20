@@ -18,21 +18,21 @@ int main(int argc, char *argv[])
 	struct compiler_state cs;
 
 	sc_state_init(&cs, argc, argv);
-	sc_lexer_tokenize(&cs);
+	sc_lexer_read_tokens(&cs);
 	/* Parse LL(k) grammar */
-	sc_parser_begin(&cs);
+	//sc_parser_begin(&cs);
 	/* Transfrom derivation tree to AST */
-	sc_ast_transform(cs.parse_tree);
+	//sc_ast_transform(cs.parse_tree);
 	/* Dump AST */
 	//sc_parser_dump(cs.parse_tree);
 	/* Generate IR */
-	sc_ir_make(&cs, cs.parse_tree);
+	//sc_ir_make(&cs, cs.parse_tree);
 	/* Dump IR to stdout */
-	sc_ir_print_tac(cs.vm, cs.irs);
+	//sc_ir_print_tac(cs.vm, cs.irs);
 	/* Transform IR to bytecode */
-	sc_emit_tac(&cs);
+	//sc_emit_tac(&cs);
 	/* Show bytecode*/
-	sc_vm_dump_bytecode(&cs);
+	//sc_vm_dump_bytecode(&cs);
 
 	/* Produce RPN for arithmetic operators */
 	//sc_sort_station_make_postfix(cs);

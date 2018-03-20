@@ -28,23 +28,25 @@ enum tokens {
 	N_FUNCCALL,
 
 	/* Terminals */
-	LBRA,
-	RBRA,
-	LPAR,
-	RPAR,
-	IF,
-	THEN,
-	ELSE,
-	END,
+	LBRA, /* { */
+	RBRA, /* } */
+	LPAR, /* ( */
+	RPAR, /* ) */
+	IF, /* if */
+	THEN, /* then */
+	ELSE, /* else */
+	END, /* end */
 	ID,
 	NUM,
 	ASSIGN,
+	CMP,
 	EQ,
 	PLUS,
 	MINUS,
 	DIV,
 	MUL,
-	EOS,
+	/* Fake token */
+	SPACE,
 	TOK__MAX
 };
 
@@ -57,10 +59,7 @@ struct token {
 };
 
 /* Scan and evaluate input stream */
-void sc_lexer_tokenize(struct compiler_state *cs);
-/* Print chain of scanned tokens */
-void sc_lexer_token_chain(const struct compiler_state *cs);
-void sc_lexer_token_chain_vector(const struct vector *v);
+void sc_lexer_read_tokens(struct compiler_state *cs);
 struct token *sc_lexer_tok(u32 type);
 char *sc_lexer_token_info(const struct token *tok);
 
