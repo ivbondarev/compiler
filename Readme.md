@@ -1,6 +1,11 @@
 This is a simple compiler I've made for study purpose.
 
-Implementation based on recursive descent parser with this LL(3) grammar:
+Arguments:
+	--file file // Program to execute
+	--parsetree file // Parse tree
+	--tokens file // Dump tokens to file
+
+Grammar:
 
 ```c
 PROG -> STATEMENT
