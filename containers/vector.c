@@ -58,10 +58,19 @@ void vector_move_elems_left(struct vector *v, size_t del)
 	}
 }
 
-void sc_vector_remove_elem(struct vector *v, size_t i)
+void sc_vector_remove(struct vector *v, size_t i)
 {
-	free(v->elems[i]);
 	if (i != v->size - 1)
 		vector_move_elems_left(v, i);
 	v->size--;
+}
+
+void sc_vector_remove_last(struct vector *v)
+{
+	sc_vector_remove(v, sc_vector_size(v) - 1);
+}
+
+void *sc_vector_get_last(struct vector *v)
+{
+	sc_vector_get(v, sc_vector_size(v) - 1);
 }

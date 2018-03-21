@@ -1,11 +1,10 @@
-#include "main.h"
+#include <stddef.h>
+
 #include "containers/vector.h"
 #include "containers/tree.h"
 #include "front/lex.h"
-#include "emit.h"
-#include "vm.h"
 
-static int sort_station_priority(const struct token *tok)
+static int postfix_priority(const struct token *tok)
 {
 	switch (tok->type) {
 	case MUL:
@@ -29,7 +28,7 @@ static int sort_station_priority(const struct token *tok)
 	};
 }
 
-static void sort_station_step(struct token *tok,
+static void postfix_step(struct token *tok,
 			      struct vector *result, struct vector *stack)
 {
 	switch (tok->type) {
@@ -41,22 +40,24 @@ static void sort_station_step(struct token *tok,
 	case DIV:
 	case PLUS:
 	case MINUS: {
-		int priority = sort_station_priority(tok);
+		int priority = postfix_priority(tok);
 
 		do {
-			void *stack_top;
+			struct token *stack_top;
 
-			if (0 == stack->size)
+			if (sc_vector_size(stack) == 0)
 				break;
 
-			stack_top = stack->elems[stack->size - 1];
+			stack_top = sc_vector_get_last(stack);
 
-			if (priority < sort_station_priority(stack_top))
+			if (priority < postfix_priority(stack_top))
 				break;
+
 			sc_vector_add(result, stack_top);
-			stack->size--;
+			sc_vector_remove_last(stack);
 
-		} while (stack->size != 0);
+		} while (sc_vector_size(stack) != 0);
+
 		sc_vector_add(stack, tok);
 		break;
 	}
@@ -65,14 +66,15 @@ static void sort_station_step(struct token *tok,
 		break;
 	}
 	case RPAR: {
-		struct token *tok = stack->elems[stack->size - 1];
+		struct token *tok = sc_vector_get_last(stack);
 
 		while (LPAR != tok->type) {
 			sc_vector_add(result, tok);
-			stack->size--;
-			tok = stack->elems[stack->size - 1];
+			sc_vector_remove_last(stack);
+			tok = sc_vector_get_last(stack);
 		}
-		stack->size--;
+
+		sc_vector_remove_last(stack);
 	}
 		break;
 	default:
@@ -103,23 +105,25 @@ void sc_postfix_make(struct node *n)
 	struct vector stack;
 	struct vector result;
 	size_t i = 0;
+	size_t tokens_num = 0;
 
 	sc_vector_init(&stack);
 	sc_vector_init(&result);
 	sc_vector_init(&tokens);
 
 	postfix_node_2_vector(n, &tokens);
+	tokens_num = sc_vector_size(&tokens);
 
-	while (i < tokens.size) {
+	while (i < tokens_num) {
 		struct token *tok = sc_vector_get(&tokens, i);
 
-		sort_station_step(tok, &result, &stack);
+		postfix_step(tok, &result, &stack);
 		i++;
 	}
 
-	while (stack.size > 0) {
-		sc_vector_add(&result, stack.elems[stack.size - 1]);
-		stack.size--;
+	while (sc_vector_size(&stack) > 0) {
+		sc_vector_add(&result, sc_vector_get_last(&stack));
+		sc_vector_remove_last(&stack);
 	}
 
 	postfix_print(&result);
