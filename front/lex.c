@@ -83,6 +83,8 @@ char *sc_lexer_token_info(const struct token *tok)
 		return "else";
 	case END:
 		return "end";
+	case NODE:
+		return "NODE";
 	default:
 	       assert(0);
        }
@@ -146,6 +148,9 @@ void lexer_print_tokens(const struct compiler_state *cs)
 			break;
 		case CMP:
 			fprintf(f, "%s", "[==]");
+			break;
+		case NODE:
+			fprintf(f, "%s", "[NODE]");
 			break;
 		case EOS:
 			break;

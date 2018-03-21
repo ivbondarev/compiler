@@ -30,7 +30,7 @@ static void parser_node_info(FILE *fp, struct node *n)
 }
 
 /* Dump tree to the file */
-void parser_dump_parse_tree(FILE *fp, struct node *root)
+void sc_parser_dump_parse_tree(FILE *fp, struct node *root)
 {
 	fprintf(fp, "digraph G {\n");
 	parser_node_info(fp, root);
@@ -84,7 +84,8 @@ LOOP:
 		next_tok = sc_vector_get(&cs->tokens, *tok_id);
 		if ((tok->type == ID || tok->type == NUM)
 			&& (next_tok->type != MINUS && next_tok->type != PLUS
-			&& next_tok->type != MUL && next_tok->type != DIV))
+			&& next_tok->type != MUL && next_tok->type != DIV
+			&& next_tok->type != RPAR))
 			break;
 		goto LOOP;
 		break;
@@ -98,8 +99,8 @@ void sc_parser_begin(struct compiler_state *cs)
 
 	/* Start recursive descent parser, already has one node "Statement"*/
 	parser_prod(cs, &toks_num, STATEMENT, cs->parse_tree);
-	//assert(toks_num == cs->tokens.size);
+	assert(toks_num + 1== cs->tokens.size); /* +1 is EOS */
 
 	if (cs->dump.parse_tree != NULL)
-		parser_dump_parse_tree(cs->dump.parse_tree, cs->parse_tree);
+		sc_parser_dump_parse_tree(cs->dump.parse_tree, cs->parse_tree);
 }

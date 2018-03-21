@@ -1,8 +1,10 @@
 #include <stddef.h>
+#include <assert.h>
 
 #include "containers/vector.h"
 #include "containers/tree.h"
 #include "front/lex.h"
+#include "parser.h"
 
 static int postfix_priority(const struct token *tok)
 {
@@ -99,6 +101,79 @@ void postfix_node_2_vector(struct node *n, struct vector *v)
 	}
 }
 
+void postfix_build_tree(struct vector *rpn_toks, struct node *root)
+{
+	size_t i = 0;
+	size_t root_nodes_sz = sc_vector_size(&root->nodes);
+	struct node *new_root; /* Root node of the expression */
+
+	while (sc_vector_size(rpn_toks) != 1) {
+		struct token *tok = sc_vector_get(rpn_toks, i); /* current tok*/
+		struct token *prev1; /* i - 1 */
+		struct token *prev2; /* i - 2 */
+		struct node *n; /* new node */
+		struct node *l; /* left op */
+		struct node *r; /* right op */
+		struct token *faketok; /* Fake token (i.e. NODE) */
+
+		if (tok->type == ID
+		    || tok->type == NUM
+		    || tok->type == NODE) {
+			i++;
+			continue;
+		}
+
+		n = malloc(sizeof(*n));
+		sc_tree_init(n, tok);
+		n->parent = NULL;
+
+		prev2 = sc_vector_get(rpn_toks, i - 2);
+		prev1 = sc_vector_get(rpn_toks, i - 1);
+
+		if (prev2->type == NODE) {
+			l = (struct node *)prev2->str;
+		} else {
+			l = malloc(sizeof(*l));
+			sc_tree_init(l, prev2);
+		}
+
+		if (prev1->type == NODE) {
+			r = (struct node *)prev1->str;
+		} else {
+			r = malloc(sizeof(*r));
+			sc_tree_init(r, prev1);
+		}
+
+		l->parent = n;
+		r->parent = n;
+
+		sc_vector_add(&n->nodes, l);
+		sc_vector_add(&n->nodes, r);
+
+		/* Add fake Node token instead of 3 elements */
+		faketok = sc_lexer_tok(NODE);
+		rpn_toks->elems[i] = faketok;
+		faketok->str = (char *)n;
+
+		sc_vector_remove(rpn_toks, i - 1);
+		sc_vector_remove(rpn_toks, i - 2);
+		i = 0;
+	}
+
+	/* Remove old child nodes */
+	while (root_nodes_sz != 0) {
+		sc_vector_remove(&root->nodes, 0);
+		root_nodes_sz--;
+	}
+
+	assert(sc_vector_size(&root->nodes) == 0);
+
+	new_root = (struct node *)((struct token *)
+			(sc_vector_get(rpn_toks, 0)))->str;
+	new_root->parent = root;
+	sc_vector_add(&root->nodes, new_root);
+}
+
 void sc_postfix_make(struct node *n)
 {
 	struct vector tokens;
@@ -126,5 +201,5 @@ void sc_postfix_make(struct node *n)
 		sc_vector_remove_last(&stack);
 	}
 
-	postfix_print(&result);
+	postfix_build_tree(&result, n);
 }

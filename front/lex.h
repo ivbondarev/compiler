@@ -44,6 +44,7 @@ enum tokens {
 	/* Fake token */
 	SPACE,
 	EOS,
+	NODE,
 	TOK__MAX
 };
 
