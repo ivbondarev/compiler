@@ -5,26 +5,17 @@
 #include "parser.h"
 #include "main.h"
 #include "utils.h"
-
-static const char *parser_non_term_info(struct token *tok)
-{
-	switch (tok->type) {
-	case ASSIGNMENT:
-		return "ASSIGNMENT";
-	case EXPRESSION:
-		return "EXPRESSION";
-	case STATEMENT:
-		return "STATEMENT";
-	default:
-		return "NYI";
-	};
-}
+#include "postfix.h"
 
 /* Recursive print info about all nodes */
 static void parser_node_info(FILE *fp, struct node *n)
 {
 	const char *tok_info;
 	struct token *tok;
+
+	tok = n->data;
+	if (tok->type == EXPRESSION)
+		sc_postfix_make(n);
 
 	for (size_t i = 0; i < n->nodes.size; i++)
 		parser_node_info(fp, n->nodes.elems[i]);

@@ -5,7 +5,6 @@
 
 struct compiler_state;
 
-/* Produce stack-based bytecode */
-void sc_sort_station_make_postfix(struct compiler_state *cs);
+void sc_postfix_make(struct node *n);
 
 #endif /* !_SORT_STATION_H */
