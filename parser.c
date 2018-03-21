@@ -87,6 +87,8 @@ LOOP:
 			&& next_tok->type != MUL && next_tok->type != DIV
 			&& next_tok->type != RPAR))
 			break;
+		if (tok->type == RPAR && next_tok->type == EOS)
+			break;
 		goto LOOP;
 		break;
 	}
